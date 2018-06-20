@@ -119,7 +119,8 @@ function registerHelpers() {
   hb.registerHelper("tryLink", function(obj, options) {
     const content = options.fn(this);
     const isDefaultJSON =
-      obj.name === "toJSON" &&
+      obj.name &&
+      obj.name.value === "toJSON" &&
       obj.extAttrs.some(({ name }) => name === "Default");
     // nothing defines this.
     if (!obj.dfn && !isDefaultJSON) {
@@ -162,9 +163,10 @@ function idlType2Html(idlType) {
   }
   let type = "";
   if (idlType.generic) {
-    type = standardTypes.has(idlType.generic)
-      ? linkStandardType(idlType.generic)
-      : idlType2Html(idlType.generic);
+    const generic = idlType.generic.value;
+    type = standardTypes.has(generic)
+      ? linkStandardType(generic)
+      : idlType2Html(generic);
     type = `${type}&lt;${idlType2Html(idlType.idlType)}>`;
   } else {
     type = standardTypes.has(idlType.idlType)
@@ -246,12 +248,12 @@ const extenedAttributesLinks = new Map([
 ]);
 
 function extAttr(extAttrs, indent, singleLine) {
-  if (extAttrs.length === 0) {
+  if (!extAttrs) {
     // If there are no extended attributes, omit the [] entirely.
     return "";
   }
   var opt = {
-    extAttrs: extAttrs,
+    extAttrs: extAttrs.items,
     indent: indent,
     sep: singleLine ? ", " : ",\n " + idn(indent),
     end: singleLine ? " " : "\n",
@@ -576,7 +578,7 @@ function writeInterfaceDefinition(opt, fixes = {}) {
     ) {
       continue;
     }
-    var len = idlType2Text(it.idlType).length;
+    var len = idlType2Text((it.body || it).idlType).length;
     if (it.type === "attribute") {
       var qualifiersLen = writeAttributeQualifiers(it).length;
       maxAttr = Math.max(len, maxAttr);
@@ -663,7 +665,7 @@ function writeAttribute(attr, max, indent, maxQualifiers) {
 }
 
 function writeMethod(meth, max, indent) {
-  var paramObjs = meth.arguments
+  var paramObjs = (meth.body && meth.body.arguments || [])
     .filter(function(it) {
       return !typeIsWhitespace(it.type);
     })
@@ -675,7 +677,7 @@ function writeMethod(meth, max, indent) {
       });
     });
   var params = paramObjs.join(", ");
-  var len = idlType2Text(meth.idlType).length;
+  var len = idlType2Text(meth.body.idlType).length;
   var specialProps = [
     "getter",
     "setter",
@@ -793,6 +795,7 @@ function linkDefinitions(parse, definitionMap, parent, idlElem) {
         [
           "includes",
           "implements",
+          "eof",
           "ws",
           "ws-pea",
           "ws-tpea",
@@ -844,8 +847,8 @@ function linkDefinitions(parse, definitionMap, parent, idlElem) {
             "idl-def-" + parent.toLowerCase() + "-" + name.toLowerCase();
           break;
         case "operation":
-          if (defn.name) {
-            name = defn.name;
+          if (defn.body && defn.body.name) {
+            name = defn.body.name.value;
             var qualifiedName = parent + "." + name;
             var fullyQualifiedName = parent + "." + name + "()";
             if (!operationNames[fullyQualifiedName]) {
@@ -869,10 +872,10 @@ function linkDefinitions(parse, definitionMap, parent, idlElem) {
           }
           const idHead = `idl-def-${parent.toLowerCase()}-${name.toLowerCase()}`;
           const idTail =
-            defn.overload || !defn.arguments.length
+            defn.overload || !defn.body || !defn.body.arguments.length
               ? ""
               : "-" +
-                defn.arguments
+                defn.body.arguments
                   .filter(arg => !typeIsWhitespace(arg.type))
                   .map(arg => arg.name.toLowerCase())
                   .join("-")

@@ -2,5 +2,5 @@
 --}}{{idn indent}}[{{#join extAttrs sep
   }}<span class='{{extAttrClassName}}'><span class="extAttrName">{{name
   }}</span>{{#if rhs}}=<span class="extAttrRhs">{{#extAttrRhs rhs}}{{ this }}{{/extAttrRhs}}</span>{{/if
-  }}{{#jsIf arguments}}({{#joinNonWhitespace arguments ", "}}{{param this}}{{/joinNonWhitespace}}){{/jsIf
+  }}{{#jsIf signature}}({{#joinNonWhitespace signature.arguments ", "}}{{param this}}{{/joinNonWhitespace}}){{/jsIf
 }}</span>{{/join}}]{{end}}

@@ -226,42 +226,8 @@ define(["exports", "core/utils", "handlebars.runtime", "core/pubsubhub", "templa
     conf.isMemberSubmission = conf.specStatus === "Member-SUBM";
     conf.anOrA = precededByAn.includes(conf.specStatus) ? "an" : "a";
     conf.isTagFinding = conf.specStatus === "finding" || conf.specStatus === "draft-finding";
-    if (!conf.edDraftURI) {
-      conf.edDraftURI = "";
-      if (conf.specStatus === "ED") (0, _pubsubhub.pub)("warn", "Editor's Drafts should set edDraftURI.");
-    }
     conf.maturity = status2maturity[conf.specStatus] ? status2maturity[conf.specStatus] : conf.specStatus;
     var publishSpace = "TR";
-    if (conf.specStatus === "Member-SUBM") publishSpace = "Submission";else if (conf.specStatus === "Team-SUBM") publishSpace = "TeamSubmission";
-    if (conf.isRegular) conf.thisVersion = "https://www.w3.org/" + publishSpace + "/" + conf.publishDate.getUTCFullYear() + "/" + conf.maturity + "-" + conf.shortName + "-" + (0, _utils.concatDate)(conf.publishDate) + "/";
-    if (conf.specStatus === "ED") conf.thisVersion = conf.edDraftURI;
-    if (conf.isRegular) conf.latestVersion = "https://www.w3.org/" + publishSpace + "/" + conf.shortName + "/";
-    if (conf.isTagFinding) {
-      conf.latestVersion = "https://www.w3.org/2001/tag/doc/" + conf.shortName;
-      conf.thisVersion = conf.latestVersion + "-" + _utils.ISODate.format(conf.publishDate);
-    }
-    if (conf.previousPublishDate) {
-      if (!conf.previousMaturity && !conf.isTagFinding) {
-        (0, _pubsubhub.pub)("error", "`previousPublishDate` is set, but not `previousMaturity`.");
-      }
-
-      conf.previousPublishDate = validateDateAndRecover(conf, "previousPublishDate");
-
-      var pmat = status2maturity[conf.previousMaturity] ? status2maturity[conf.previousMaturity] : conf.previousMaturity;
-      if (conf.isTagFinding) {
-        conf.prevVersion = conf.latestVersion + "-" + _utils.ISODate.format(conf.previousPublishDate);
-      } else if (conf.isCGBG) {
-        conf.prevVersion = conf.prevVersion || "";
-      } else if (conf.isBasic) {
-        conf.prevVersion = "";
-      } else {
-        conf.prevVersion = "https://www.w3.org/TR/" + conf.previousPublishDate.getUTCFullYear() + "/" + pmat + "-" + conf.shortName + "-" + (0, _utils.concatDate)(conf.previousPublishDate) + "/";
-      }
-    } else {
-      if (!/NOTE$/.test(conf.specStatus) && conf.specStatus !== "FPWD" && conf.specStatus !== "FPLC" && conf.specStatus !== "ED" && !conf.noRecTrack && !conf.isNoTrack && !conf.isSubmission) (0, _pubsubhub.pub)("error", "Document on track but no previous version:" + " Add `previousMaturity`, and `previousPublishDate` to ReSpec's config.");
-      if (!conf.prevVersion) conf.prevVersion = "";
-    }
-    if (conf.prevRecShortname && !conf.prevRecURI) conf.prevRecURI = "https://www.w3.org/TR/" + conf.prevRecShortname;
     if (!conf.editors || conf.editors.length === 0) (0, _pubsubhub.pub)("error", "At least one editor is required");
     var peopCheck = function (it) {
       if (!it.name) (0, _pubsubhub.pub)("error", "All authors and editors must have a name.");
@@ -306,7 +272,6 @@ define(["exports", "core/utils", "handlebars.runtime", "core/pubsubhub", "templa
     if (status2rdf[conf.specStatus]) {
       conf.rdfStatus = status2rdf[conf.specStatus];
     }
-    conf.showThisVersion = !conf.isNoTrack || conf.isTagFinding;
     conf.notYetRec = conf.isRecTrack && conf.specStatus !== "REC";
     conf.isRec = conf.isRecTrack && conf.specStatus === "REC";
     if (conf.isRec && !conf.errata) (0, _pubsubhub.pub)("error", "Recommendations must have an errata link.");
@@ -339,13 +304,6 @@ define(["exports", "core/utils", "handlebars.runtime", "core/pubsubhub", "templa
     document.body.insertBefore(header, document.body.firstChild);
     document.body.classList.add("h-entry");
 
-    // handle SotD
-    var sotd = document.getElementById("sotd") || document.createElement("section");
-    if ((conf.isCGBG || !conf.isNoTrack || conf.isTagFinding) && !sotd.id) {
-      (0, _pubsubhub.pub)("error", "A custom SotD paragraph is required for your type of document.");
-    }
-    sotd.id = sotd.id || "sotd";
-    sotd.classList.add("introductory");
     // NOTE:
     //  When arrays, wg and wgURI have to be the same length (and in the same order).
     //  Technically wgURI could be longer but the rest is ignored.

@@ -64,10 +64,6 @@ define(["exports", "./show-people", "./show-link", "core/pubsubhub", "deps/hyper
       <dt>${conf.l10n.latest_published_version}</dt>
       <dd>${conf.latestVersion ? html`<a href='${conf.latestVersion}'>${conf.latestVersion}</a>` : "none"}</dd>
     ` : ""}
-    ${conf.edDraftURI ? html`
-      <dt>${conf.l10n.latest_editors_draft}</dt>
-      <dd><a href='${conf.edDraftURI}'>${conf.edDraftURI}</a></dd>
-    ` : ""}
     ${conf.testSuiteURI ? html`
       <dt>Test suite:</dt>
       <dd><a href='${conf.testSuiteURI}'>${conf.testSuiteURI}</a></dd>

@@ -79,7 +79,7 @@ const cs = {
   issue_summary: "Souhrn issues",
   issue: "Issue",
   latest_editors_draft: "Nejnovější draft editora:",
-  latest_published_version: "Nejnovější publikovaná verze:",
+  latest_published_version: "Nejnovější verze:",
   list_of_definitions: "Seznam definic",
   norm_references: "Normativní reference",
   note: "Poznámka",

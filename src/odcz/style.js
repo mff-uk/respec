@@ -7,7 +7,7 @@
 
 import { toKeyValuePairs, createResourceHint, linkCSS } from "core/utils";
 import { pub, sub } from "core/pubsubhub";
-export const name = "w3c/style";
+export const name = "odcz/style";
 function attachFixupScript(doc, version) {
   const script = doc.createElement("script");
   if (location.hash) {
@@ -106,38 +106,6 @@ export function run(conf, doc, cb) {
     pub("warn", warn);
   }
 
-  let styleFile = "W3C-";
-
-  // Figure out which style file to use.
-  switch (conf.specStatus.toUpperCase()) {
-    case "CG-DRAFT":
-    case "CG-FINAL":
-    case "BG-DRAFT":
-    case "BG-FINAL":
-      styleFile = conf.specStatus.toLowerCase();
-      break;
-    case "FPWD":
-    case "LC":
-    case "WD-NOTE":
-    case "LC-NOTE":
-      styleFile += "WD";
-      break;
-    case "WG-NOTE":
-    case "FPWD-NOTE":
-      styleFile += "WG-NOTE.css";
-      break;
-    case "UNOFFICIAL":
-      styleFile += "UD";
-      break;
-    case "FINDING":
-    case "FINDING-DRAFT":
-    case "BASE":
-      styleFile = "base.css";
-      break;
-    default:
-      styleFile += conf.specStatus;
-  }
-
   // Select between released styles and experimental style.
   const version = selectStyleVersion(conf.useExperimentalStyles || "2016");
   // Attach W3C fixup script after we are done.
@@ -151,7 +119,7 @@ export function run(conf, doc, cb) {
     );
   }
   const finalVersionPath = version ? version + "/" : "";
-  const finalStyleURL = `https://www.w3.org/StyleSheets/TR/${finalVersionPath}${styleFile}`;
+  const finalStyleURL = `https://data.gov.cz/css/spec/${conf.specStatus}.css`;
 
   linkCSS(doc, finalStyleURL);
   cb();

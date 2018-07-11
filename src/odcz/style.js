@@ -119,7 +119,7 @@ export function run(conf, doc, cb) {
     );
   }
   const finalVersionPath = version ? version + "/" : "";
-  const finalStyleURL = `https://data.gov.cz/css/spec/${conf.specStatus}.css`;
+  const finalStyleURL = `https://data.gov.cz/specifikace/static/css/${conf.specStatus}.css`;
 
   linkCSS(doc, finalStyleURL);
   cb();

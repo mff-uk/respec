@@ -111,7 +111,7 @@ define(["exports", "core/utils", "core/pubsubhub"], function (exports, _utils, _
       }, { once: true });
     }
     const finalVersionPath = version ? version + "/" : "";
-    const finalStyleURL = `https://data.gov.cz/css/spec/${conf.specStatus}.css`;
+    const finalStyleURL = `https://data.gov.cz/specifikace/static/css/${conf.specStatus}.css`;
 
     (0, _utils.linkCSS)(doc, finalStyleURL);
     cb();

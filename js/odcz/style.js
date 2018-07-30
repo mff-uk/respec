@@ -21,7 +21,7 @@ define(["exports", "core/utils", "core/pubsubhub"], function (exports, _utils, _
         window.location = location.hash;
       }, { once: true });
     }
-    script.src = `https://www.w3.org/scripts/TR/${version}/fixup.js`;
+    script.src = `https://data.gov.cz/otevřené-formální-normy/static/js/fixup.js`;
     doc.body.appendChild(script);
   }
 
@@ -45,7 +45,7 @@ define(["exports", "core/utils", "core/pubsubhub"], function (exports, _utils, _
   function createBaseStyle() {
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "https://www.w3.org/StyleSheets/TR/2016/base.css";
+    link.href = "https://data.gov.cz/otevřené-formální-normy/static/css/base.css";
     link.classList.add("removeOnSave");
     return link;
   }
@@ -67,15 +67,15 @@ define(["exports", "core/utils", "core/pubsubhub"], function (exports, _utils, _
 
   function createResourceHints() {
     const resourceHints = [{
-      hint: "preconnect", // for W3C styles and scripts.
-      href: "https://www.w3.org"
+      hint: "preconnect", // for styles and scripts.
+      href: "https://data.gov.cz"
     }, {
       hint: "preload", // all specs need it, and we attach it on end-all.
-      href: "https://www.w3.org/scripts/TR/2016/fixup.js",
+      href: "https://data.gov.cz/otevřené-formální-normy/static/js/fixup.js",
       as: "script"
     }, {
       hint: "preload", // all specs include on base.css.
-      href: "https://www.w3.org/StyleSheets/TR/2016/base.css",
+      href: "https://data.gov.cz/otevřené-formální-normy/static/css/base.css",
       as: "style"
     }].map(_utils.createResourceHint).reduce(function (frag, link) {
       frag.appendChild(link);
@@ -111,7 +111,7 @@ define(["exports", "core/utils", "core/pubsubhub"], function (exports, _utils, _
       }, { once: true });
     }
     const finalVersionPath = version ? version + "/" : "";
-    const finalStyleURL = `https://data.gov.cz/specifikace/static/css/${conf.specStatus}.css`;
+    const finalStyleURL = `https://data.gov.cz/otevřené-formální-normy/static/css/${conf.specStatus}.css`;
 
     (0, _utils.linkCSS)(doc, finalStyleURL);
     cb();

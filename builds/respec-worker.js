@@ -1,7 +1,7 @@
 // ReSpec Worker v0.1.1
 "use strict";
 try {
-  importScripts("https://www.w3.org/Tools/respec/respec-highlight.js");
+  importScripts("https://data.gov.cz/otevřené-formální-normy/static/js/respec-highlight.js");
   hljs.configure({
     tabReplace: "  ", // 2 spaces
     languages: ["abnf", "css", "http", "javascript", "json", "markdown", "xml"],

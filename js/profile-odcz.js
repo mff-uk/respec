@@ -16,7 +16,7 @@ require.config({
   },
   paths: {
     "handlebars.runtime": "deps/handlebars",
-    "deps/highlight": "https://www.w3.org/Tools/respec/respec-highlight",
+    "deps/highlight": "https://data.gov.cz/otevřené-formální-normy/static/js/respec-highlight",
   },
   deps: ["deps/hyperhtml", "deps/url-search-params"],
 });

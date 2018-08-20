@@ -24,7 +24,6 @@ require.config({
 define(
   [
     // order is significant
-    "deps/domReady",
     "core/base-runner",
     "core/ui",
     "core/location-hash",
@@ -80,18 +79,24 @@ define(
     "core/highlight-vars",
     /*Linter must be the last thing to run*/
     "core/linter",
-  ],
-  (domReady, runner, { ui }, ...plugins) => {
-    ui.show();
-    domReady(async () => {
-      try {
-        await runner.runAll(plugins);
-        await document.respecIsReady;
-      } catch (err) {
-        console.error(err);
-      } finally {
-        ui.enable();
-      }
-    });
+  ], (runner, { ui }, ...plugins) => {
+  ui.show();
+  domReady().then(async () => {
+    try {
+      await runner.runAll(plugins);
+      await document.respecIsReady;
+    } catch (err) {
+      console.error(err);
+    } finally {
+      ui.enable();
+    }
+  });
+});
+
+async function domReady() {
+  if (document.readyState === "loading") {
+    await new Promise(resolve =>
+      document.addEventListener("DOMContentLoaded", resolve)
+    );
   }
-);
+}

@@ -6,11 +6,11 @@ define(["exports", "core/pubsubhub"], function (exports, _pubsubhub) {
   });
   exports.name = undefined;
   exports.run = run;
-  const name = exports.name = "w3c/seo"; // Module w3c/seo
+  const name = exports.name = "odcz/seo"; // Module w3c/seo
   // Manages SEO information for documents
   // e.g. set the canonical URL for the document if configured
   function run(conf, doc, cb) {
-    var trLatestUri = conf.shortName ? "https://www.w3.org/TR/" + conf.shortName + "/" : null;
+    const trLatestUri = conf.shortName ? "https://data.gov.cz/otevřené-formální-normy/" + conf.shortName + "/" : null;
     switch (conf.canonicalURI) {
       case "edDraft":
         if (conf.edDraftURI) {
@@ -41,7 +41,7 @@ define(["exports", "core/pubsubhub"], function (exports, _pubsubhub) {
         }
     }
     if (conf.canonicalURI) {
-      var linkElem = doc.createElement("link");
+      const linkElem = doc.createElement("link");
       linkElem.setAttribute("rel", "canonical");
       linkElem.setAttribute("href", conf.canonicalURI);
       doc.head.appendChild(linkElem);

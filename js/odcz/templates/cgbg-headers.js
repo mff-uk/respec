@@ -1,9 +1,11 @@
-define(["exports", "./show-people", "./show-link", "deps/hyperhtml"], function (exports, _showPeople, _showLink) {
+define(["exports", "./show-logo", "./show-people", "./show-link", "deps/hyperhtml"], function (exports, _showLogo, _showPeople, _showLink) {
   "use strict";
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
+
+  var _showLogo2 = _interopRequireDefault(_showLogo);
 
   var _showPeople2 = _interopRequireDefault(_showPeople);
 

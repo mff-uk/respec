@@ -3,6 +3,19 @@
  */
 export const name = "odcz/defaults";
 import linter from "core/linter";
+import { rule as noHeadinglessSectionsRule } from "core/linter-rules/no-headingless-sections";
+import { rule as noHttpPropsRule } from "core/linter-rules/no-http-props";
+import { rule as privsecSectionRule } from "w3c/linter-rules/privsec-section";
+import { rule as checkPunctuation } from "core/linter-rules/check-punctuation";
+import { rule as localRefsExist } from "core/linter-rules/local-refs-exist";
+
+linter.register(
+  noHttpPropsRule,
+  privsecSectionRule,
+  noHeadinglessSectionsRule,
+  checkPunctuation,
+  localRefsExist
+);
 const licenses = new Map([
   [
     "cc0",

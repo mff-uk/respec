@@ -1,4 +1,5 @@
 import "deps/hyperhtml";
+import showLogo from "./show-logo";
 import showPeople from "./show-people";
 import showLink from "./show-link";
 

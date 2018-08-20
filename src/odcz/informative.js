@@ -1,7 +1,7 @@
-// Module w3c/informative
+// Module odcz/informative
 // Mark specific sections as informative, based on CSS
 import "deps/hyperhtml";
-export const name = "w3c/informative";
+export const name = "odcz/informative";
 
 export function run() {
   Array.from(document.querySelectorAll("section.informative"))

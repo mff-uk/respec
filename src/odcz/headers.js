@@ -101,7 +101,7 @@ import headersTmpl from "odcz/templates/headers";
 
 export const name = "odcz/headers";
 
-const W3CDate = new Intl.DateTimeFormat(["en-AU"], {
+const W3CDate = new Intl.DateTimeFormat(["cs-cz"], {
   timeZone: "UTC",
   year: "numeric",
   month: "long",
@@ -169,8 +169,8 @@ const baseLogo = Object.freeze({
   alt: "",
   href: "",
   src: "",
-  height: "48",
-  width: "72",
+  height: "64",
+  width: "64",
 });
 
 function validateDateAndRecover(conf, prop, fallbackDate = new Date()) {

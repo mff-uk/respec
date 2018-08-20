@@ -117,7 +117,7 @@ define(["exports", "core/utils", "handlebars.runtime", "core/pubsubhub", "templa
   //            https://www.w3.org/Consortium/Legal/2015/copyright-software-and-document
   const name = exports.name = "odcz/headers";
 
-  const W3CDate = new Intl.DateTimeFormat(["en-AU"], {
+  const W3CDate = new Intl.DateTimeFormat(["cs-cz"], {
     timeZone: "UTC",
     year: "numeric",
     month: "long",
@@ -175,8 +175,8 @@ define(["exports", "core/utils", "handlebars.runtime", "core/pubsubhub", "templa
     alt: "",
     href: "",
     src: "",
-    height: "48",
-    width: "72"
+    height: "64",
+    width: "64"
   });
 
   function validateDateAndRecover(conf, prop, fallbackDate = new Date()) {

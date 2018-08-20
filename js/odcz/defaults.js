@@ -1,4 +1,4 @@
-define(["exports", "core/linter"], function (exports, _linter) {
+define(["exports", "core/linter", "core/linter-rules/no-headingless-sections", "core/linter-rules/no-http-props", "w3c/linter-rules/privsec-section", "core/linter-rules/check-punctuation", "core/linter-rules/local-refs-exist"], function (exports, _linter, _noHeadinglessSections, _noHttpProps, _privsecSection, _checkPunctuation, _localRefsExist) {
   "use strict";
 
   Object.defineProperty(exports, "__esModule", {
@@ -34,6 +34,8 @@ define(["exports", "core/linter"], function (exports, _linter) {
    */
   const name = exports.name = "odcz/defaults";
 
+
+  _linter2.default.register(_noHttpProps.rule, _privsecSection.rule, _noHeadinglessSections.rule, _checkPunctuation.rule, _localRefsExist.rule);
   const licenses = new Map([["cc0", {
     name: "Creative Commons 0 Public Domain Dedication",
     short: "CC0",

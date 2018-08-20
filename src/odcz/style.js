@@ -78,6 +78,11 @@ function createResourceHints() {
       hint: "preload", // all specs include on base.css.
       href: "https://data.gov.cz/otevřené-formální-normy/static/css/base.css",
       as: "style",
+    },
+    {
+      hint: "preload", // all specs show the logo.
+      href: "https://data.gov.cz/otevřené-formální-normy/static/images/logo.png",
+      as: "image",
     }
   ]
     .map(createResourceHint)

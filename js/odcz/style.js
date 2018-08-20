@@ -77,6 +77,10 @@ define(["exports", "core/utils", "core/pubsubhub"], function (exports, _utils, _
       hint: "preload", // all specs include on base.css.
       href: "https://data.gov.cz/otevřené-formální-normy/static/css/base.css",
       as: "style"
+    }, {
+      hint: "preload", // all specs show the logo.
+      href: "https://data.gov.cz/otevřené-formální-normy/static/images/logo.png",
+      as: "image"
     }].map(_utils.createResourceHint).reduce(function (frag, link) {
       frag.appendChild(link);
       return frag;

@@ -1,9 +1,11 @@
-define(["exports", "./show-people", "./show-link", "core/pubsubhub", "deps/hyperhtml"], function (exports, _showPeople, _showLink, _pubsubhub) {
+define(["exports", "./show-logo", "./show-people", "./show-link", "core/pubsubhub", "deps/hyperhtml"], function (exports, _showLogo, _showPeople, _showLink, _pubsubhub) {
   "use strict";
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
+
+  var _showLogo2 = _interopRequireDefault(_showLogo);
 
   var _showPeople2 = _interopRequireDefault(_showPeople);
 
@@ -54,6 +56,7 @@ define(["exports", "./show-people", "./show-link", "core/pubsubhub", "deps/hyper
     const html = hyperHTML;
 
     return html`<div class='head'>
+  ${conf.logos.map(_showLogo2.default)}
   ${getSpecTitleElem(conf)}
   ${getSpecSubTitleElem(conf)}
   <h2>${conf.textStatus} <time class='dt-published' datetime='${conf.dashDate}'>${conf.publishHumanDate}</time></h2>

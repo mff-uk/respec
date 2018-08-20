@@ -1,4 +1,5 @@
 import "deps/hyperhtml";
+import showLogo from "./show-logo";
 import showPeople from "./show-people";
 import showLink from "./show-link";
 import { pub } from "core/pubsubhub";
@@ -43,6 +44,7 @@ export default conf => {
   const html = hyperHTML;
   
   return html`<div class='head'>
+  ${conf.logos.map(showLogo)}
   ${getSpecTitleElem(conf)}
   ${getSpecSubTitleElem(conf)}
   <h2>${conf.textStatus} <time class='dt-published' datetime='${conf.dashDate}'>${conf.publishHumanDate}</time></h2>

@@ -30,6 +30,7 @@ define(
     "core/location-hash",
     "odcz/l10n",
 //    "core/l10n",
+    "odcz/defaults",
 //    "w3c/defaults",
     "core/style",
     "odcz/style",

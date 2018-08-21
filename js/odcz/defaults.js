@@ -51,8 +51,8 @@ define(["exports", "core/linter", "core/linter-rules/no-headingless-sections", "
       "no-headingless-sections": true,
       "privsec-section": true,
       "no-http-props": true,
-      "check-punctuation": false
-      //    "local-refs-exist": true,
+      "check-punctuation": false,
+      "local-refs-exist": true
     },
     pluralize: false,
     highlightVars: true,

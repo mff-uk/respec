@@ -41,7 +41,7 @@ const odczDefaults = {
     "privsec-section": true,
     "no-http-props": true,
     "check-punctuation": false,
-//    "local-refs-exist": true,
+    "local-refs-exist": true,
   },
   pluralize: false,
   highlightVars: true,

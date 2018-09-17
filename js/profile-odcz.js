@@ -18,7 +18,7 @@ require.config({
     "handlebars.runtime": "deps/handlebars",
     "deps/highlight": "https://data.gov.cz/otevřené-formální-normy/static/js/respec-highlight",
   },
-  deps: ["deps/hyperhtml", "deps/url-search-params"],
+  deps: ["deps/hyperhtml"],
 });
 
 define(
@@ -63,7 +63,6 @@ define(
     "core/structure",
     "odcz/informative",
 //    "w3c/informative",
-//    "w3c/permalinks",
     "core/id-headers",
     "core/caniuse",
     "ui/save-html",

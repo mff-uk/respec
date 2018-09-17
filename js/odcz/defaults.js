@@ -65,7 +65,8 @@ define(["exports", "core/linter", "core/linter-rules/no-headingless-sections", "
       height: 64,
       width: 64,
       url: "https://data.gov.cz/"
-    }]
+    }],
+    addSectionLinks: true
   };
 
   function computeProps(conf) {

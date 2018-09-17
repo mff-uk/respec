@@ -57,6 +57,7 @@ const odczDefaults = {
       url: "https://data.gov.cz/",
     },
   ],
+  addSectionLinks: true,
 };
 
 function computeProps(conf) {

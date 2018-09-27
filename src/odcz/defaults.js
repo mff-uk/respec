@@ -49,13 +49,19 @@ const odczDefaults = {
   license: "cc-by",
   specStatus: "base",
   logos: [
+	{
+      src: "https://data.gov.cz/otevřené-formální-normy/static/images/ozp_logo_cz.jpg",
+      alt: "Evropská unie - Evropský sociální fond - Operační program Zaměstnanost",
+      height: 48,
+      width: 231
+    },
     {
       src: "https://data.gov.cz/otevřené-formální-normy/static/images/logo.png",
       alt: "Otevřená data",
       height: 64,
       width: 64,
-      url: "https://data.gov.cz/",
-    },
+      url: "https://data.gov.cz/"
+    }
   ],
   addSectionLinks: true,
 };

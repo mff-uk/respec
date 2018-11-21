@@ -10,6 +10,7 @@ export const name = "core/utils";
 marked.setOptions({
   sanitize: false,
   gfm: true,
+  headerIds: false,
 });
 
 const spaceOrTab = /^[ |\t]*/;
@@ -574,8 +575,8 @@ export function flatten(collector, item) {
   const items = !isObject
     ? [item]
     : isIterable
-      ? [...item.values()].reduce(flatten, [])
-      : Object.values(item);
+    ? [...item.values()].reduce(flatten, [])
+    : Object.values(item);
   return [...collector, ...items];
 }
 
@@ -750,19 +751,39 @@ export function getLinkTargets(elem) {
 export function renameElement(elem, newName) {
   if (elem.localName === newName) return elem;
   const newElement = elem.ownerDocument.createElement(newName);
-
   // copy attributes
-  for (let i = 0, n = elem.attributes.length; i < n; i++) {
-    const { name, value } = elem.attributes[i];
+  for (const attribute of [...elem.attributes]) {
+    const { name, value } = attribute;
     newElement.setAttribute(name, value);
   }
-
   // copy child nodes
-  do {
+  while (elem.firstChild) {
     newElement.appendChild(elem.firstChild);
-  } while (elem.firstChild);
-
-  // TODO: replace with ChildNode.replaceWith, when available in Safari
-  elem.parentNode.replaceChild(newElement, elem);
+  }
+  elem.replaceWith(newElement);
   return newElement;
+}
+
+export function refTypeFromContext(ref, element) {
+  const informSelectors = ".informative, .note, figure, .example, .issue";
+  const closestInformative = element.closest(informSelectors);
+  let isInformative = false;
+  if (closestInformative) {
+    // check if parent is not normative
+    isInformative =
+      !element.closest(".normative") ||
+      !closestInformative.querySelector(".normative");
+  }
+  // prefixes `!` and `?` override section behavior
+  if (ref.startsWith("!")) {
+    if (isInformative) {
+      // A (forced) normative reference in informative section is illegal
+      return { type: "informative", illegal: true };
+    }
+    isInformative = false;
+  } else if (ref.startsWith("?")) {
+    isInformative = true;
+  }
+  const type = isInformative ? "informative" : "normative";
+  return { type, illegal: false };
 }

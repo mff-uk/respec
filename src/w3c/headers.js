@@ -108,6 +108,8 @@ const W3CDate = new Intl.DateTimeFormat(["en-AU"], {
 });
 
 const status2maturity = {
+  LS: "WD",
+  LD: "WD",
   FPWD: "WD",
   LC: "WD",
   FPLC: "WD",
@@ -137,6 +139,8 @@ const status2text = {
   "Team-SUBM": "Team Submission",
   MO: "Member-Only Document",
   ED: "Editor's Draft",
+  LS: "Living Standard",
+  LD: "Living Document",
   FPWD: "First Public Working Draft",
   WD: "Working Draft",
   "FPWD-NOTE": "Working Group Note",
@@ -429,10 +433,10 @@ export function run(conf) {
       );
     });
   if (conf.bugTracker) {
-    if (conf.bugTracker["new"] && conf.bugTracker.open) {
+    if (conf.bugTracker.new && conf.bugTracker.open) {
       conf.bugTrackerHTML =
         "<a href='" +
-        conf.bugTracker["new"] +
+        conf.bugTracker.new +
         "'>" +
         conf.l10n.file_a_bug +
         "</a> " +
@@ -446,9 +450,9 @@ export function run(conf) {
     } else if (conf.bugTracker.open) {
       conf.bugTrackerHTML =
         "<a href='" + conf.bugTracker.open + "'>open bugs</a>";
-    } else if (conf.bugTracker["new"]) {
+    } else if (conf.bugTracker.new) {
       conf.bugTrackerHTML =
-        "<a href='" + conf.bugTracker["new"] + "'>file a bug</a>";
+        "<a href='" + conf.bugTracker.new + "'>file a bug</a>";
     }
   }
   if (conf.copyrightStart && conf.copyrightStart == conf.publishYear)

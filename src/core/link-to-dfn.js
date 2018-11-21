@@ -14,8 +14,8 @@ const l10n = {
 };
 const lang = defaultLang in l10n ? defaultLang : "en";
 
-export async function run(conf, doc, cb) {
-  doc.normalize();
+export async function run(conf) {
+  document.normalize();
   const titles = {};
   Object.keys(conf.definitionMap).forEach(title => {
     titles[title] = {};
@@ -78,22 +78,20 @@ export async function run(conf, doc, cb) {
     const ant = $ant[0];
     if (ant.classList.contains("externalDFN")) return;
     const linkTargets = getLinkTargets(ant);
+    const { linkFor } = ant.dataset;
     const foundDfn = linkTargets.some(target => {
-      if (ant.classList.contains("respec-idl-xref")) return false;
       if (titles[target.title] && titles[target.title][target.for]) {
         const $dfn = titles[target.title][target.for];
         const dfn = $dfn[0];
-        const lt = dfn.dataset.lt ? dfn.dataset.lt.split("|") : [];
-        const plurals = dfn.dataset.plurals
-          ? dfn.dataset.plurals.split("|")
-          : [];
-        const txt = ant.textContent.toLowerCase();
         if (dfn.dataset.cite) {
           ant.dataset.cite = dfn.dataset.cite;
-        } else if (conf.xref && (lt.includes(txt) || plurals.includes(txt))) {
-          ant.dataset.dfnType = "xref";
+        } else if (linkFor && !titles[linkFor.toLowerCase()]) {
+          possibleExternalLinks.push(ant);
+        } else if (dfn.classList.contains("externalDFN")) {
           // data-lt[0] serves as unique id for the dfn which this element references
-          ant.dataset.xref = lt[0];
+          const lt = dfn.dataset.lt ? dfn.dataset.lt.split("|") : [];
+          ant.dataset.lt = lt[0] || dfn.textContent;
+          possibleExternalLinks.push(ant);
         } else {
           ant.href = "#" + dfn.id;
           ant.classList.add("internalDFN");
@@ -137,14 +135,10 @@ export async function run(conf, doc, cb) {
     });
     if (!foundDfn && linkTargets.length !== 0) {
       // ignore WebIDL
-      if (
-        !$ant.parents(
-          ".idl:not(.extAttr), dl.methods, dl.attributes, dl.constants, dl.constructors, dl.fields, dl.dictionary-members, span.idlMemberType, span.idlTypedefType, div.idlImplementsDesc"
-        ).length
-      ) {
+      if (!ant.closest("pre.idl, span.idlMemberType, span.idlTypedefType")) {
         if (ant.dataset.cite === "") {
           badLinks.push(ant);
-        } else if (ant.dataset.dfnType !== "xref") {
+        } else {
           possibleExternalLinks.push(ant);
         }
         return;
@@ -182,12 +176,10 @@ export async function run(conf, doc, cb) {
     showLinkingError(possibleExternalLinks);
   }
 
-  linkInlineCitations(doc, conf).then(() => {
-    // Added message for legacy compat with Aria specs
-    // See https://github.com/w3c/respec/issues/793
-    pub("end", "core/link-to-dfn");
-    cb();
-  });
+  await linkInlineCitations(document, conf);
+  // Added message for legacy compat with Aria specs
+  // See https://github.com/w3c/respec/issues/793
+  pub("end", "core/link-to-dfn");
 }
 
 function showLinkingError(elems) {

@@ -15,7 +15,7 @@
 //    the counter is not used.
 import { pub } from "core/pubsubhub";
 import "deps/hyperhtml";
-import { getTextNodes } from "core/utils";
+import { getTextNodes, refTypeFromContext } from "core/utils";
 import { idlStringToHtml } from "core/inline-idl-parser";
 export const name = "core/inlines";
 
@@ -40,7 +40,7 @@ export function run(conf) {
     "(\\bMUST(?:\\s+NOT)?\\b|\\bSHOULD(?:\\s+NOT)?\\b|\\bSHALL(?:\\s+NOT)?\\b|" +
     "\\bMAY\\b|\\b(?:NOT\\s+)?REQUIRED\\b|\\b(?:NOT\\s+)?RECOMMENDED\\b|\\bOPTIONAL\\b|" +
     "(?:{{3}\\s*.*\\s*}{3})|" + // inline IDL references
-      "(?:\\[\\[(?:!|\\\\)?[A-Za-z0-9\\.-]+\\]\\])" +
+      "(?:\\[\\[(?:!|\\\\|\\?)?[A-Za-z0-9\\.-]+\\]\\])" +
       (abbrRx ? `|${abbrRx}` : "") +
       ")"
   );
@@ -90,20 +90,32 @@ export function run(conf) {
               document.createTextNode(`[[${ref.replace(/^\\/, "")}]]`)
             );
           } else {
-            let norm = false;
-            if (ref.startsWith("!")) {
-              norm = true;
-              ref = ref.replace(/^!/, "");
-            }
-            // contrary to before, we always insert the link
-            if (norm) conf.normativeReferences.add(ref);
-            else conf.informativeReferences.add(ref);
+            const { type, illegal } = refTypeFromContext(ref, txt.parentNode);
+            ref = ref.replace(/^(!|\?)/, "");
             df.appendChild(document.createTextNode("["));
             const refHref = `#bib-${ref.toLowerCase()}`;
-            df.appendChild(
-              hyperHTML`<cite><a class="bibref" href="${refHref}">${ref}</a></cite>`
-            );
+            const cite = hyperHTML`<cite><a class="bibref" href="${refHref}">${ref}</a></cite>`;
+            df.appendChild(cite);
             df.appendChild(document.createTextNode("]"));
+
+            if (illegal && !conf.normativeReferences.has(ref)) {
+              cite.classList.add("respec-offending-element");
+              const msg =
+                "Normative references in informative sections are not allowed. " +
+                `Remove '!' from the start of the reference \`[[!${ref}]]\`. `;
+              pub(
+                "warn",
+                msg + "See developer console to find offending element."
+              );
+              cite.title = msg;
+              console.warn(msg, cite);
+            }
+
+            if (type === "informative" && !illegal) {
+              conf.informativeReferences.add(ref);
+            } else {
+              conf.normativeReferences.add(ref);
+            }
           }
         } else if (abbrMap.has(matched)) {
           // ABBR

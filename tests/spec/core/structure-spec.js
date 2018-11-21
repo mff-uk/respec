@@ -7,7 +7,7 @@ describe("Core - Structure", () => {
     "<section><h2>FIVE</h2><section><h2>SIX</h2></section></section></section></section></section></section>" +
     "<section class='notoc'><h2>Not in TOC</h2></section>" +
     "<section class='appendix'><h2>ONE</h2><section><h2>TWO</h2><section><h2>THREE</h2><section>" +
-    "<h2>FOUR</h2><section><h2>FIVE</h2><section><h2>SIX</h2><p>[[DAHUT]]</p><p>[[!HTML5]]</p>" +
+    "<h2>FOUR</h2><section><h2>FIVE</h2><section><h2>SIX</h2><p>[[?DAHUT]]</p><p>[[!HTML5]]</p>" +
     "</section></section></section></section></section></section>";
 
   it("should build a ToC with default values", async () => {
@@ -92,6 +92,15 @@ describe("Core - Structure", () => {
         .text()
     ).toEqual("A. ONE");
     expect($toc.find("a[href='#four-0']").text()).toEqual("A.1.1.1 FOUR");
+  });
+
+  it("gives the toc's heading an id", async () => {
+    const ops = {
+      config: makeBasicConfig(),
+      body,
+    };
+    const doc = await makeRSDoc(ops);
+    expect(doc.querySelector("#toc > h2").id).toBeTruthy();
   });
 
   it("should link to the title of the document", async () => {

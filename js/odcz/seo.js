@@ -9,12 +9,12 @@ define(["exports", "core/pubsubhub"], function (exports, _pubsubhub) {
   const name = exports.name = "odcz/seo"; // Module w3c/seo
   // Manages SEO information for documents
   // e.g. set the canonical URL for the document if configured
-  function run(conf, doc, cb) {
+  function run(conf) {
     const trLatestUri = conf.shortName ? "https://data.gov.cz/otevřené-formální-normy/" + conf.shortName + "/" : null;
     switch (conf.canonicalURI) {
       case "edDraft":
         if (conf.edDraftURI) {
-          conf.canonicalURI = new URL(conf.edDraftURI, doc.location).href;
+          conf.canonicalURI = new URL(conf.edDraftURI, document.location).href;
         } else {
           (0, _pubsubhub.pub)("warn", "Canonical URI set to edDraft, " + "but no edDraftURI is set in configuration");
           conf.canonicalURI = null;
@@ -31,7 +31,7 @@ define(["exports", "core/pubsubhub"], function (exports, _pubsubhub) {
       default:
         if (conf.canonicalURI) {
           try {
-            conf.canonicalURI = new URL(conf.canonicalURI, doc.location).href;
+            conf.canonicalURI = new URL(conf.canonicalURI, document.location).href;
           } catch (err) {
             (0, _pubsubhub.pub)("warn", "CanonicalURI is an invalid URL: " + err.message);
             conf.canonicalURI = null;
@@ -41,14 +41,13 @@ define(["exports", "core/pubsubhub"], function (exports, _pubsubhub) {
         }
     }
     if (conf.canonicalURI) {
-      const linkElem = doc.createElement("link");
+      const linkElem = document.createElement("link");
       linkElem.setAttribute("rel", "canonical");
       linkElem.setAttribute("href", conf.canonicalURI);
-      doc.head.appendChild(linkElem);
+      document.head.appendChild(linkElem);
     }
-    cb();
     if (conf.doJsonLd) {
-      addJSONLDInfo(conf, doc);
+      addJSONLDInfo(conf, document);
     }
   }
 

@@ -99,7 +99,7 @@ define(["exports", "core/utils", "core/pubsubhub"], function (exports, _utils, _
 
   document.head.insertBefore(elements, document.head.firstChild);
 
-  function run(conf, doc, cb) {
+  function run(conf) {
     if (!conf.specStatus) {
       const warn = "`respecConfig.specStatus` missing. Defaulting to 'base'.";
       conf.specStatus = "base";
@@ -111,14 +111,13 @@ define(["exports", "core/utils", "core/pubsubhub"], function (exports, _utils, _
     // Attach W3C fixup script after we are done.
     if (version && !conf.noToc) {
       (0, _pubsubhub.sub)("end-all", function () {
-        attachFixupScript(doc, version);
+        attachFixupScript(document, version);
       }, { once: true });
     }
     const finalVersionPath = version ? version + "/" : "";
     const finalStyleURL = `https://data.gov.cz/otevřené-formální-normy/static/css/${conf.specStatus}.css`;
 
-    (0, _utils.linkCSS)(doc, finalStyleURL);
-    cb();
+    (0, _utils.linkCSS)(document, finalStyleURL);
   }
 });
 //# sourceMappingURL=style.js.map

@@ -24,8 +24,8 @@ define(["exports", "core/pubsubhub", "deps/hyperhtml"], function (exports, _pubs
     return html`
     <dd class="${data.class ? data.class : null}">
       ${data.href ? html`
-        <a href="${data.href}">${data.value || data.href}</a>
-      ` : ""}
+              <a href="${data.href}">${data.value || data.href}</a>
+            ` : ""}
     </dd>
   `;
   }

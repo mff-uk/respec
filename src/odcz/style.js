@@ -104,7 +104,7 @@ if (!document.head.querySelector("meta[name=viewport]")) {
 
 document.head.insertBefore(elements, document.head.firstChild);
 
-export function run(conf, doc, cb) {
+export function run(conf) {
   if (!conf.specStatus) {
     const warn = "`respecConfig.specStatus` missing. Defaulting to 'base'.";
     conf.specStatus = "base";
@@ -118,7 +118,7 @@ export function run(conf, doc, cb) {
     sub(
       "end-all",
       function() {
-        attachFixupScript(doc, version);
+        attachFixupScript(document, version);
       },
       { once: true }
     );
@@ -126,6 +126,5 @@ export function run(conf, doc, cb) {
   const finalVersionPath = version ? version + "/" : "";
   const finalStyleURL = `https://data.gov.cz/otevřené-formální-normy/static/css/${conf.specStatus}.css`;
 
-  linkCSS(doc, finalStyleURL);
-  cb();
+  linkCSS(document, finalStyleURL);
 }

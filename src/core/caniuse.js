@@ -3,11 +3,10 @@
  * Adds a caniuse support table for a "feature" #1238
  * Usage options: https://github.com/w3c/respec/wiki/caniuse
  */
-import { semverCompare } from "core/utils";
-import { pub, sub } from "core/pubsubhub";
-import "deps/hyperhtml";
-import { createResourceHint, fetchAndCache } from "core/utils";
-import caniuseCss from "deps/text!core/css/caniuse.css";
+import { createResourceHint, fetchAndCache, semverCompare } from "./utils";
+import { pub, sub } from "./pubsubhub";
+import caniuseCss from "text!../../assets/caniuse.css";
+import hyperHTML from "hyperhtml";
 
 export const name = "core/caniuse";
 
@@ -54,7 +53,7 @@ export async function run(conf) {
     return; // no feature to show
   }
   const { feature } = caniuse;
-  const featureURL = "https://caniuse.com/#feat=" + feature;
+  const featureURL = `https://caniuse.com/#feat=${feature}`;
   const link = createResourceHint({
     hint: "preconnect",
     href: "https://raw.githubusercontent.com",
@@ -136,7 +135,7 @@ function normalizeConf(conf) {
  * Get stats for canIUse table.
  *
  * @param {Object} caniuseConf    normalized respecConfig.caniuse
- * @return {Object} Can I Use stats
+ * @return {Promise<Object>} Can I Use stats
  * @throws {Error} on failure
  */
 async function fetchAndCacheJson(caniuseConf) {
@@ -191,7 +190,7 @@ function createTableHTML(conf, stats) {
     };
     const addBrowserVersion = version => {
       const { support, title } = getSupport(version);
-      const cssClass = "caniuse-cell " + support;
+      const cssClass = `caniuse-cell ${support}`;
       return `<li class="${cssClass}" title="${title}">${version}</li>`;
     };
 

@@ -28,6 +28,11 @@ module.exports = function(config) {
     files: [
       "js/deps/jquery.js",
       {
+        pattern: "assets/**/*.*",
+        included: false,
+        served: true,
+      },
+      {
         pattern: "tests/support-files/**/*",
         included: false,
         served: true,
@@ -81,13 +86,14 @@ module.exports = function(config) {
 
     proxies: {
       "/about-blank.html": "/base/tests/about-blank.html",
+      "/assets/": "/base/assets/",
       "/js/": "/base/js/",
+      "/builds/": "/base/builds/",
       "/tests/": "/base/tests/",
       "/spec/": "/base/tests/spec/",
       "/deps/": "/base/js/deps/",
       "/js/deps/": "/base/js/deps/",
       "/base/deps/": "/base/js/deps/",
-      "/base/deps/marked.js": "/base/js/deps/marked.js",
       "/worker/respec-worker.js": "/base/worker/respec-worker.js",
       "/support-files/hljs-testlang.js":
         "/base/tests/support-files/hljs-testlang.js",
@@ -133,12 +139,13 @@ module.exports = function(config) {
     },
   };
   if (process.env.TRAVIS) {
+    process.env.CHROME_BIN = require("puppeteer").executablePath();
     options.detectBrowsers.enabled = false;
     options.autoWatch = false;
     options.singleRun = true;
     options.concurrency = 1;
     options.reporters = ["mocha"];
-    options.browsers = ["ChromeHeadless"]; //"Firefox"
+    options.browsers = ["ChromeHeadless"];
   }
   config.set(options);
 };

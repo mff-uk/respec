@@ -1,5 +1,5 @@
 language: node_js
-dist: trusty
+dist: xenial
 node_js:
   - lts/*
 
@@ -7,13 +7,6 @@ install:
   - npm install
   - npm run build
   - npm run build:respec-odcz
-
-# use sudo to workaround https://github.com/w3c/respec/issues/1462 
-sudo: required
-
-addons:
-#  firefox: latest
-  chrome: stable
 
 cache:
   directories:

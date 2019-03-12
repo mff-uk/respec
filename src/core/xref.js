@@ -3,9 +3,13 @@
 // For each returend result, adds `data-cite` attributes to respective elements,
 //   so later they can be handled by core/link-to-dfn.
 // https://github.com/w3c/respec/issues/1662
-
-import { norm as normalize, showInlineError } from "core/utils";
-import * as IDB from "deps/idb";
+import {
+  IDBKeyVal,
+  nonNormativeSelector,
+  norm as normalize,
+  showInlineWarning,
+} from "./utils";
+import { openDb } from "idb";
 
 const API_URL = new URL(
   "https://wt-466c7865b463a6c4cbb820b42dde9e58-0.sandbox.auth0-extend.com/xref-proto-2"
@@ -30,7 +34,10 @@ const CACHE_MAX_AGE = 86400000; // 24 hours
  * @param {Array:Elements} elems possibleExternalLinks
  */
 export async function run(conf, elems) {
-  const cache = new IDB.Store("xref", "xrefs");
+  const idb = await openDb("xref", 1, upgradeDB => {
+    upgradeDB.createObjectStore("xrefs");
+  });
+  const cache = new IDBKeyVal(idb, "xrefs");
   const { xref } = conf;
   const xrefMap = createXrefMap(elems);
   const allKeys = collectKeys(xrefMap);
@@ -124,9 +131,9 @@ function collectKeys(xrefs) {
 // adds data to cache
 async function cacheResults(data, cache) {
   const promisesToSet = Object.entries(data).map(([term, results]) =>
-    IDB.set(term, results, cache)
+    cache.set(term, results)
   );
-  await IDB.set("__CACHE_TIME__", new Date(), cache);
+  await cache.set("__CACHE_TIME__", new Date());
   await Promise.all(promisesToSet);
 }
 
@@ -139,14 +146,14 @@ async function cacheResults(data, cache) {
  *  @property {Array} notFound keys not found in cache
  */
 async function resolveFromCache(keys, cache) {
-  const cacheTime = await IDB.get("__CACHE_TIME__", cache);
+  const cacheTime = await cache.get("__CACHE_TIME__");
   const bustCache = cacheTime && new Date() - cacheTime > CACHE_MAX_AGE;
   if (bustCache) {
-    await IDB.clear(cache);
+    await cache.clear();
     return { found: Object.create(null), notFound: keys };
   }
 
-  const promisesToGet = keys.map(({ term }) => IDB.get(term, cache));
+  const promisesToGet = keys.map(({ term }) => cache.get(term));
   const cachedData = await Promise.all(promisesToGet);
   return keys.reduce(separate, { found: Object.create(null), notFound: [] });
 
@@ -220,9 +227,7 @@ function addDataCiteToTerms(results, xrefMap, conf) {
       });
 
       // add specs for citation (references section)
-      const closestInform = elem.closest(
-        ".informative, .note, figure, .example, .issue"
-      );
+      const closestInform = elem.closest(nonNormativeSelector);
       if (
         closestInform &&
         (!elem.closest(".normative") ||
@@ -237,7 +242,7 @@ function addDataCiteToTerms(results, xrefMap, conf) {
             `Adding an informative reference to "${term}" from "${cite}" ` +
             "in a normative section";
           const title = "Error: Informative reference in normative section";
-          showInlineError(entry.elem, msg, title);
+          showInlineWarning(entry.elem, msg, title);
         }
       }
     });
@@ -270,7 +275,7 @@ function disambiguate(fetchedData, context, term) {
       `Couldn't match "**${term}**" to anything in the document or to any other spec. ` +
       "Please provide a [`data-cite`](https://github.com/w3c/respec/wiki/data--cite) attribute for it.";
     const title = "Error: No matching dfn found.";
-    if (!elem.dataset.cite) showInlineError(elem, msg, title);
+    if (!elem.dataset.cite) showInlineWarning(elem, msg, title);
     return null;
   }
 
@@ -287,6 +292,6 @@ function disambiguate(fetchedData, context, term) {
       .map(s => `**${s}**`)
       .join(", ")}.`;
   const title = "Error: Linking an ambiguous dfn.";
-  showInlineError(elem, msg, title);
+  showInlineWarning(elem, msg, title);
   return null;
 }

@@ -1,3 +1,4 @@
+// @ts-check
 // Module core/inlines
 // Process all manners of inline information. These are done together despite it being
 // seemingly a better idea to orthogonalise them. The issue is that processing text nodes
@@ -13,21 +14,29 @@
 //  - respecRFC2119: a list of the number of times each RFC2119
 //    key word was used.  NOTE: While each member is a counter, at this time
 //    the counter is not used.
-import { pub } from "core/pubsubhub";
-import "deps/hyperhtml";
-import { getTextNodes, refTypeFromContext } from "core/utils";
-import { idlStringToHtml } from "core/inline-idl-parser";
+import { getTextNodes, refTypeFromContext, showInlineWarning } from "./utils";
+import hyperHTML from "hyperhtml";
+import { idlStringToHtml } from "./inline-idl-parser";
+import { pub } from "./pubsubhub";
+import { renderInlineCitation } from "./render-biblio";
 export const name = "core/inlines";
+export const rfc2119Usage = {};
 
 export function run(conf) {
   document.normalize();
+  if (!document.querySelector("section#conformance")) {
+    // make the document informative
+    document.body.classList.add("informative");
+  }
   if (!conf.normativeReferences) conf.normativeReferences = new Set();
   if (!conf.informativeReferences) conf.informativeReferences = new Set();
-  if (!conf.respecRFC2119) conf.respecRFC2119 = {};
+  if (!conf.respecRFC2119) conf.respecRFC2119 = rfc2119Usage;
 
   // PRE-PROCESSING
   const abbrMap = new Map();
-  for (const abbr of Array.from(document.querySelectorAll("abbr[title]"))) {
+  /** @type {NodeListOf<HTMLElement>} */
+  const abbrs = document.querySelectorAll("abbr[title]");
+  for (const abbr of abbrs) {
     abbrMap.set(abbr.textContent, abbr.title);
   }
   const aKeys = [...abbrMap.keys()];
@@ -37,12 +46,18 @@ export function run(conf) {
   // PROCESSING
   const txts = getTextNodes(document.body, ["pre"]);
   const rx = new RegExp(
-    "(\\bMUST(?:\\s+NOT)?\\b|\\bSHOULD(?:\\s+NOT)?\\b|\\bSHALL(?:\\s+NOT)?\\b|" +
-    "\\bMAY\\b|\\b(?:NOT\\s+)?REQUIRED\\b|\\b(?:NOT\\s+)?RECOMMENDED\\b|\\bOPTIONAL\\b|" +
-    "(?:{{3}\\s*.*\\s*}{3})|" + // inline IDL references
-      "(?:\\[\\[(?:!|\\\\|\\?)?[A-Za-z0-9\\.-]+\\]\\])" +
-      (abbrRx ? `|${abbrRx}` : "") +
-      ")"
+    `(${[
+      "\\bMUST(?:\\s+NOT)?\\b",
+      "\\bSHOULD(?:\\s+NOT)?\\b",
+      "\\bSHALL(?:\\s+NOT)?\\b",
+      "\\bMAY\\b",
+      "\\b(?:NOT\\s+)?REQUIRED\\b",
+      "\\b(?:NOT\\s+)?RECOMMENDED\\b",
+      "\\bOPTIONAL\\b",
+      "(?:{{3}\\s*.*\\s*}{3})", // inline IDL references,
+      "(?:\\[\\[(?:!|\\\\|\\?)?[A-Za-z0-9\\.-]+\\]\\])",
+      ...(abbrRx ? [abbrRx] : []),
+    ].join("|")})`
   );
   for (const txt of txts) {
     const subtxt = txt.data.split(rx);
@@ -66,7 +81,7 @@ export function run(conf) {
             hyperHTML`<em class="rfc2119" title="${matched}">${matched}</em>`
           );
           // remember which ones were used
-          conf.respecRFC2119[matched] = true;
+          rfc2119Usage[matched] = true;
         } else if (matched.startsWith("{{{")) {
           // External IDL references (xref)
           const ref = matched
@@ -91,35 +106,26 @@ export function run(conf) {
             );
           } else {
             const { type, illegal } = refTypeFromContext(ref, txt.parentNode);
-            ref = ref.replace(/^(!|\?)/, "");
-            df.appendChild(document.createTextNode("["));
-            const refHref = `#bib-${ref.toLowerCase()}`;
-            const cite = hyperHTML`<cite><a class="bibref" href="${refHref}">${ref}</a></cite>`;
-            df.appendChild(cite);
-            df.appendChild(document.createTextNode("]"));
-
-            if (illegal && !conf.normativeReferences.has(ref)) {
-              cite.classList.add("respec-offending-element");
-              const msg =
+            const cite = renderInlineCitation(ref);
+            const cleanRef = ref.replace(/^(!|\?)/, "");
+            df.append(...cite.childNodes);
+            if (illegal && !conf.normativeReferences.has(cleanRef)) {
+              showInlineWarning(
+                cite.childNodes[1], // cite element
                 "Normative references in informative sections are not allowed. " +
-                `Remove '!' from the start of the reference \`[[!${ref}]]\`. `;
-              pub(
-                "warn",
-                msg + "See developer console to find offending element."
+                  `Remove '!' from the start of the reference \`[[!${ref}]]\``
               );
-              cite.title = msg;
-              console.warn(msg, cite);
             }
 
             if (type === "informative" && !illegal) {
-              conf.informativeReferences.add(ref);
+              conf.informativeReferences.add(cleanRef);
             } else {
-              conf.normativeReferences.add(ref);
+              conf.normativeReferences.add(cleanRef);
             }
           }
         } else if (abbrMap.has(matched)) {
           // ABBR
-          if (txt.parentNode.tagName === "ABBR")
+          if (txt.parentElement.tagName === "ABBR")
             df.appendChild(document.createTextNode(matched));
           else
             df.appendChild(hyperHTML`

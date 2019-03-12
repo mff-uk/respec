@@ -1,3 +1,5 @@
+import { expose } from "./expose-modules";
+
 /**
  * Module core/pubsubhub
  *
@@ -14,7 +16,7 @@ export function pub(topic, ...data) {
   }
   Array.from(subscriptions.get(topic)).forEach(cb => {
     try {
-      cb.apply(undefined, data);
+      cb(...data);
     } catch (err) {
       pub(
         "error",
@@ -77,3 +79,5 @@ sub("error", err => {
 sub("warn", str => {
   console.warn(str);
 });
+
+expose(name, { sub });

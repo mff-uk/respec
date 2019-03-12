@@ -11,6 +11,7 @@
  * that is preferred.
  */
 export const name = "core/webidl-index";
+import { nonNormativeSelector } from "./utils";
 
 export function run() {
   const idlIndexSec = document.querySelector("section#idl-index");
@@ -27,18 +28,25 @@ export function run() {
     } else {
       header.innerHTML = "IDL Index";
     }
-    idlIndexSec.insertAdjacentElement("afterbegin", header);
+    idlIndexSec.prepend(header);
   }
-  if (!document.querySelector("pre.idl")) {
+
+  // filter out the IDL marked with class="exclude" and the IDL in non-normative sections
+  const idlIndex = Array.from(
+    document.querySelectorAll("pre.def.idl:not(.exclude)")
+  ).filter(idl => !idl.closest(nonNormativeSelector));
+
+  if (idlIndex.length === 0) {
     const text = "This specification doesn't declare any Web IDL.";
     const noIDLFound = document.createTextNode(text);
     idlIndexSec.appendChild(noIDLFound);
     return;
   }
+
   const pre = document.createElement("pre");
   pre.classList.add("idl", "def");
   pre.id = "actual-idl-index";
-  Array.from(document.querySelectorAll("pre.def.idl"))
+  idlIndex
     .map(elem => {
       const fragment = document.createDocumentFragment();
       for (const child of elem.children) {

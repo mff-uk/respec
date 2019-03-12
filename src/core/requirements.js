@@ -9,8 +9,8 @@
 // 2.  It allows referencing requirements by their ID simply using an empty <a>
 //     element with its href pointing to the requirement it should be referencing
 //     and a class of "reqRef".
-import { pub } from "core/pubsubhub";
-import "deps/hyperhtml";
+import hyperHTML from "hyperhtml";
+import { pub } from "./pubsubhub";
 
 export const name = "core/requirements";
 
@@ -30,7 +30,7 @@ export function run() {
       txt = req.querySelector("a:first-child").textContent;
     } else {
       txt = `Req. not found '${id}'`;
-      const msg = "Requirement not found in element `a.reqRef`: " + id;
+      const msg = `Requirement not found in element \`a.reqRef\`: ${id}`;
       pub("error", msg);
       console.warn(msg, ref);
     }

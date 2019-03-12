@@ -41,9 +41,9 @@
  *     </section>
  *
  * The whitespace of pre elements are left alone.
- **/
+ */
 
-import { markdownToHtml } from "core/utils";
+import { markdownToHtml } from "./utils";
 export const name = "core/markdown";
 
 function processElements(selector) {
@@ -107,7 +107,7 @@ class Builder {
     node.appendChild(process(node));
 
     if (header) {
-      node.insertBefore(header, node.firstChild);
+      node.prepend(header);
     }
 
     parent.appendChild(node);
@@ -187,9 +187,7 @@ export function run(conf) {
         ) {
           const section = structuredInternals.firstElementChild;
           section.remove();
-          while (section.hasChildNodes()) {
-            elem.appendChild(section.firstChild);
-          }
+          elem.append(...section.childNodes);
         } else {
           elem.innerHTML = "";
         }
@@ -221,6 +219,6 @@ export function run(conf) {
   const fragment = structure(newBody, document);
   // Frankenstein the whole thing back together
   newBody.appendChild(fragment);
-  newBody.insertAdjacentElement("afterbegin", rsUI);
+  newBody.prepend(rsUI);
   document.body.parentNode.replaceChild(newBody, document.body);
 }

@@ -1,20 +1,27 @@
-define(["exports"], function (exports) {
+define(["exports", "hyperhtml"], function (_exports, _hyperhtml) {
   "use strict";
 
-  Object.defineProperty(exports, "__esModule", {
+  Object.defineProperty(_exports, "__esModule", {
     value: true
   });
+  _exports.default = void 0;
+  _hyperhtml = _interopRequireDefault(_hyperhtml);
 
-  exports.default = (conf, name, items = []) => {
-    const html = hyperHTML;
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+  var _default = (conf, name, items = []) => {
+    const html = _hyperhtml.default;
     const results = [];
+
     for (const item of items) {
       results.push(getItem(item));
     }
+
     return results;
 
     function getItem(p) {
       const personName = [p.name]; // treated as opt-in HTML by hyperHTML
+
       const company = [p.company];
       const editorid = p.w3cid ? parseInt(p.w3cid, 10) : null;
       const dd = html`
@@ -22,6 +29,7 @@ define(["exports"], function (exports) {
     `;
       const span = document.createDocumentFragment();
       const contents = [];
+
       if (p.mailto) {
         contents.push(html`
         <a class="ed_mailto u-email email p-name" href="${`mailto:${p.mailto}`}"
@@ -37,6 +45,7 @@ define(["exports"], function (exports) {
           <span class="p-name fn">${personName}</span>
         `);
       }
+
       if (p.company) {
         if (p.companyURL) {
           contents.push(html`
@@ -50,18 +59,20 @@ define(["exports"], function (exports) {
           `);
         }
       }
+
       if (p.note) contents.push(document.createTextNode(` (${p.note})`));
+
       if (p.extras) {
-        const results = p.extras
-        // Remove empty names
-        .filter(extra => extra.name && extra.name.trim())
-        // Convert to HTML
+        const results = p.extras // Remove empty names
+        .filter(extra => extra.name && extra.name.trim()) // Convert to HTML
         .map(getExtra);
+
         for (const result of results) {
           contents.push(document.createTextNode(", "), result);
         }
       }
-      hyperHTML.bind(span)`${contents}`;
+
+      _hyperhtml.default.bind(span)`${contents}`;
       dd.appendChild(span);
       return dd;
     }
@@ -71,15 +82,19 @@ define(["exports"], function (exports) {
       <span class="${extra.class || null}"></span>
     `;
       let textContainer = span;
+
       if (extra.href) {
         textContainer = html`
         <a href="${extra.href}"></a>
       `;
         span.appendChild(textContainer);
       }
+
       textContainer.textContent = extra.name;
       return span;
     }
   };
+
+  _exports.default = _default;
 });
 //# sourceMappingURL=show-people.js.map

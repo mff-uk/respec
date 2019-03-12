@@ -5,7 +5,7 @@
  * to manage the config.l10n object so that other parts of the system can
  * localize their text.
  */
-export const name = "odcz/l10n";
+export const name = "../odcz/l10n";
 
 const html = document.documentElement;
 if (html && !html.hasAttribute("lang")) {

@@ -1,12 +1,11 @@
-/*jshint strict: true, browser:true, jquery: true*/
-/*globals define*/
+/* jshint strict: true, browser:true, jquery: true */
 // Module w3c/style
 // Inserts a link to the appropriate W3C style for the specification's maturity level.
 // CONFIGURATION
 //  - specStatus: the short code for the specification's maturity level or type (required)
 
-import { toKeyValuePairs, createResourceHint, linkCSS } from "core/utils";
-import { pub, sub } from "core/pubsubhub";
+import { createResourceHint, linkCSS, toKeyValuePairs } from "../core/utils";
+import { pub, sub } from "../core/pubsubhub";
 export const name = "odcz/style";
 function attachFixupScript(doc, version) {
   const script = doc.createElement("script");
@@ -99,10 +98,17 @@ const elements = createResourceHints();
 elements.appendChild(createBaseStyle());
 if (!document.head.querySelector("meta[name=viewport]")) {
   // Make meta viewport the first element in the head.
-  elements.insertBefore(createMetaViewport(), elements.firstChild);
+  elements.prepend(createMetaViewport());
 }
 
-document.head.insertBefore(elements, document.head.firstChild);
+document.head.prepend(elements);
+
+function styleMover(linkURL) {
+  return exportDoc => {
+    const odczStyle = exportDoc.querySelector(`head link[href="${linkURL}"]`);
+    exportDoc.querySelector("head").append(odczStyle);
+  };
+}
 
 export function run(conf) {
   if (!conf.specStatus) {
@@ -123,8 +129,11 @@ export function run(conf) {
       { once: true }
     );
   }
-  const finalVersionPath = version ? version + "/" : "";
+  const finalVersionPath = version ? `${version}/` : "";
   const finalStyleURL = `https://data.gov.cz/otevřené-formální-normy/static/css/${conf.specStatus}.css`;
 
   linkCSS(document, finalStyleURL);
+  // Make sure the ODCZ stylesheet is the last stylesheet, as required by W3C Pub Rules.
+  const moveStyle = styleMover(finalStyleURL);
+  sub("beforesave", moveStyle);
 }

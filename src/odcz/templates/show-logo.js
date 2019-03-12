@@ -1,17 +1,14 @@
-import "deps/hyperhtml";
-import { pub } from "core/pubsubhub";
+import hyperHTML from "hyperhtml";
+import { showInlineWarning } from "../../core/utils";
 
 export default obj => {
   const a = document.createElement("a");
   if (!obj.alt) {
-    const msg = "Found spec logo without an `alt` attribute. See dev console.";
-    a.classList.add("respec-offending-element");
-    pub("warn", msg);
-    console.warn("warn", msg, a);
+    showInlineWarning(a, "Found spec logo without an `alt` attribute");
   }
   a.href = obj.url || "";
   a.classList.add("logo");
-  hyperHTML.bind(a) `
+  hyperHTML.bind(a)`
       <img
         id="${obj.id}"
         alt="${obj.alt}"
@@ -22,4 +19,4 @@ export default obj => {
   // hyperHTML attribute values
   a.querySelector("img").src = obj.src;
   return a;
-}
+};

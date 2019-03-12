@@ -1,6 +1,6 @@
 // Module odcz/informative
 // Mark specific sections as informative, based on CSS
-import "deps/hyperhtml";
+import hyperHTML from "hyperhtml";
 export const name = "odcz/informative";
 
 export function run() {
@@ -8,9 +8,6 @@ export function run() {
     .map(informative => informative.querySelector("h2, h3, h4, h5, h6"))
     .filter(heading => heading)
     .forEach(heading => {
-      heading.parentNode.insertBefore(
-        hyperHTML`<p><em>Tato sekce není normativní.</em></p>`,
-        heading.nextSibling
-      );
+      heading.after(hyperHTML`<p><em>Tato sekce není normativní.</em></p>`);
     });
 }

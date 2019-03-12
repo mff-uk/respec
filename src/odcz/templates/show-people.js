@@ -1,3 +1,5 @@
+import hyperHTML from "hyperhtml";
+
 export default (conf, name, items = []) => {
   const html = hyperHTML;
   const results = [];

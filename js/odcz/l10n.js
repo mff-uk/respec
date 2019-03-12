@@ -1,24 +1,15 @@
-define(["exports"], function (exports) {
+define(["exports"], function (_exports) {
   "use strict";
 
-  Object.defineProperty(exports, "__esModule", {
+  Object.defineProperty(_exports, "__esModule", {
     value: true
   });
-  exports.run = run;
+  _exports.run = run;
+  _exports.lang = _exports.l10n = _exports.name = void 0;
 
-  var _extends = Object.assign || function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
+  function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
 
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
-        }
-      }
-    }
-
-    return target;
-  };
+  function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
   /**
    * Module odcz/l10n
@@ -27,17 +18,19 @@ define(["exports"], function (exports) {
    * to manage the config.l10n object so that other parts of the system can
    * localize their text.
    */
-  const name = exports.name = "odcz/l10n";
-
+  const name = "../odcz/l10n";
+  _exports.name = name;
   const html = document.documentElement;
+
   if (html && !html.hasAttribute("lang")) {
     html.lang = "en";
+
     if (!html.hasAttribute("dir")) {
       html.dir = "ltr";
     }
-  }
+  } // We use en-US as the base
 
-  // We use en-US as the base
+
   const base = {
     about_respec: "About",
     abstract: "Abstract",
@@ -78,7 +71,6 @@ define(["exports"], function (exports) {
     toc: "Table of Contents",
     warning: "Warning"
   };
-
   const ko = {
     abstract: "요약",
     author: "저자:",
@@ -88,7 +80,6 @@ define(["exports"], function (exports) {
     sotd: "현재 문서의 상태",
     this_version: "현재 버전:"
   };
-
   const zh = {
     abstract: "摘要",
     bug_tracker: "错误跟踪：",
@@ -104,7 +95,6 @@ define(["exports"], function (exports) {
     this_version: "本版本：",
     toc: "内容大纲"
   };
-
   const ja = {
     abstract: "要約",
     author: "著者：",
@@ -121,7 +111,6 @@ define(["exports"], function (exports) {
     this_version: "このバージョン：",
     toc: "目次"
   };
-
   const nl = {
     about_respec: "Over",
     abstract: "Samenvatting",
@@ -155,7 +144,6 @@ define(["exports"], function (exports) {
     toc: "Inhoudsopgave",
     warning: "Waarschuwing"
   };
-
   const es = {
     abstract: "Resumen",
     author: "Autor:",
@@ -186,7 +174,6 @@ define(["exports"], function (exports) {
     toc: "Tabla de Contenidos",
     warning: "Aviso"
   };
-
   const cs = {
     about_respec: "O ReSpec",
     abstract: "Abstrakt",
@@ -227,21 +214,20 @@ define(["exports"], function (exports) {
     toc: "Obsah",
     warning: "Varování"
   };
-
-  const l10n = exports.l10n = {
-    en: _extends({}, base),
-    ko: _extends({}, base, ko),
-    zh: _extends({}, base, zh),
-    ja: _extends({}, base, ja),
-    nl: _extends({}, base, nl),
-    es: _extends({}, base, es),
-    cs: _extends({}, base, cs)
+  const l10n = {
+    en: _objectSpread({}, base),
+    ko: _objectSpread({}, base, ko),
+    zh: _objectSpread({}, base, zh),
+    ja: _objectSpread({}, base, ja),
+    nl: _objectSpread({}, base, nl),
+    es: _objectSpread({}, base, es),
+    cs: _objectSpread({}, base, cs)
   };
-
+  _exports.l10n = l10n;
   l10n["zh-hans"] = l10n.zh;
   l10n["zh-cn"] = l10n.zh;
-
-  const lang = exports.lang = html && html.lang in l10n ? html.lang : "en";
+  const lang = html && html.lang in l10n ? html.lang : "en";
+  _exports.lang = lang;
 
   function run(config) {
     config.l10n = l10n[lang] || l10n.en;

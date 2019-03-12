@@ -1,21 +1,13 @@
 /**
- * Sets the defaults for ODCZ specs
+ * Sets the defaults for W3C specs
  */
 export const name = "odcz/defaults";
-import linter from "core/linter";
-import { rule as noHeadinglessSectionsRule } from "core/linter-rules/no-headingless-sections";
-import { rule as noHttpPropsRule } from "core/linter-rules/no-http-props";
-import { rule as privsecSectionRule } from "w3c/linter-rules/privsec-section";
-import { rule as checkPunctuation } from "core/linter-rules/check-punctuation";
-import { rule as localRefsExist } from "core/linter-rules/local-refs-exist";
+import { coreDefaults } from "../core/defaults";
+import { definitionMap } from "../core/dfn-map";
+import linter from "../core/linter";
+import { rule as privsecSectionRule } from "../w3c/linter-rules/privsec-section";
 
-linter.register(
-  noHttpPropsRule,
-  privsecSectionRule,
-  noHeadinglessSectionsRule,
-  checkPunctuation,
-  localRefsExist
-);
+linter.register(privsecSectionRule);
 const licenses = new Map([
   [
     "cc0",
@@ -67,26 +59,26 @@ const odczDefaults = {
   addSectionLinks: true,
 };
 
-function computeProps(conf) {
-  return {
-    isCCBY: conf.license === "cc-by",
-    licenseInfo: licenses.get(conf.license),
-    isCGFinal: conf.isCGBG && /G-FINAL$/.test(conf.specStatus),
-    isBasic: conf.specStatus === "base",
-    isRegular: !conf.isCGBG && conf.specStatus === "base",
-  };
-}
-
 export function run(conf) {
   // assign the defaults
+  const lint =
+    conf.lint === false
+      ? false
+      : {
+          ...coreDefaults.lint,
+          ...odczDefaults.lint,
+          ...conf.lint,
+        };
   Object.assign(conf, {
+    ...coreDefaults,
     ...odczDefaults,
     ...conf,
+    lint,
   });
-  Object.assign(conf.lint, {
-    ...odczDefaults.lint,
-    ...conf.lint,
-  });
-  //computed properties
-  Object.assign(conf, computeProps(conf));
+  
+  
+  // TODO: eventually, we want to remove this.
+  // It's here for legacy support of json-ld specs
+  // see https://github.com/w3c/respec/issues/2019
+  Object.assign(conf, { definitionMap });
 }

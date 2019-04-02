@@ -120,19 +120,6 @@ define(["exports", "../core/utils", "./templates/cgbg-headers", "./templates/hea
       (0, _pubsubhub.pub)("error", "Missing required configuration: `shortName`");
     }
 
-    if (conf.testSuiteURI) {
-      const url = new URL(conf.testSuiteURI, location.href);
-      const {
-        host,
-        pathname
-      } = url;
-
-      if (host === "github.com" && pathname.startsWith("/w3c/web-platform-tests/")) {
-        const msg = "Web Platform Tests have moved to a new Github Organization at https://github.com/web-platform-tests. " + "Please update your [`testSuiteURI`](https://github.com/w3c/respec/wiki/testSuiteURI) to point to the " + `new tests repository (e.g., https://github.com/web-platform-tests/wpt/${conf.shortName} ).`;
-        (0, _pubsubhub.pub)("warn", msg);
-      }
-    }
-
     conf.title = document.title || "No Title";
     if (!conf.subtitle) conf.subtitle = "";
     conf.publishDate = validateDateAndRecover(conf, "publishDate", document.lastModified);
@@ -141,29 +128,7 @@ define(["exports", "../core/utils", "./templates/cgbg-headers", "./templates/hea
     conf.isNoTrack = noTrackStatus.includes(conf.specStatus);
     conf.isRecTrack = conf.noRecTrack ? false : recTrackStatus.includes(conf.specStatus);
     conf.isMemberSubmission = conf.specStatus === "Member-SUBM";
-
-    if (conf.isMemberSubmission) {
-      const memSubmissionLogo = {
-        alt: "W3C Member Submission",
-        href: "https://www.w3.org/Submission/",
-        src: "https://www.w3.org/Icons/member_subm-v.svg",
-        width: "211"
-      };
-      conf.logos.push(_objectSpread({}, baseLogo, memSubmissionLogo));
-    }
-
     conf.isTeamSubmission = conf.specStatus === "Team-SUBM";
-
-    if (conf.isTeamSubmission) {
-      const teamSubmissionLogo = {
-        alt: "W3C Team Submission",
-        href: "https://www.w3.org/TeamSubmission/",
-        src: "https://www.w3.org/Icons/team_subm-v.svg",
-        width: "211"
-      };
-      conf.logos.push(_objectSpread({}, baseLogo, teamSubmissionLogo));
-    }
-
     conf.isSubmission = conf.isMemberSubmission || conf.isTeamSubmission;
     conf.anOrA = precededByAn.includes(conf.specStatus) ? "an" : "a";
     conf.isTagFinding = conf.specStatus === "finding" || conf.specStatus === "draft-finding";
@@ -176,38 +141,7 @@ define(["exports", "../core/utils", "./templates/cgbg-headers", "./templates/hea
     conf.maturity = status2maturity[conf.specStatus] ? status2maturity[conf.specStatus] : conf.specStatus;
     let publishSpace = "TR";
     if (conf.specStatus === "Member-SUBM") publishSpace = "Submission";else if (conf.specStatus === "Team-SUBM") publishSpace = "TeamSubmission";
-    if (conf.isRegular) conf.thisVersion = `https://www.w3.org/${publishSpace}/${conf.publishDate.getUTCFullYear()}/${conf.maturity}-${conf.shortName}-${(0, _utils.concatDate)(conf.publishDate)}/`;
     if (conf.specStatus === "ED") conf.thisVersion = conf.edDraftURI;
-    if (conf.isRegular) conf.latestVersion = `https://www.w3.org/${publishSpace}/${conf.shortName}/`;
-
-    if (conf.isTagFinding) {
-      conf.latestVersion = `https://www.w3.org/2001/tag/doc/${conf.shortName}`;
-      conf.thisVersion = `${conf.latestVersion}-${_utils.ISODate.format(conf.publishDate)}`;
-    }
-
-    if (conf.previousPublishDate) {
-      if (!conf.previousMaturity && !conf.isTagFinding) {
-        (0, _pubsubhub.pub)("error", "`previousPublishDate` is set, but not `previousMaturity`.");
-      }
-
-      conf.previousPublishDate = validateDateAndRecover(conf, "previousPublishDate");
-      const pmat = status2maturity[conf.previousMaturity] ? status2maturity[conf.previousMaturity] : conf.previousMaturity;
-
-      if (conf.isTagFinding) {
-        conf.prevVersion = `${conf.latestVersion}-${_utils.ISODate.format(conf.previousPublishDate)}`;
-      } else if (conf.isCGBG) {
-        conf.prevVersion = conf.prevVersion || "";
-      } else if (conf.isBasic) {
-        conf.prevVersion = "";
-      } else {
-        conf.prevVersion = `https://www.w3.org/TR/${conf.previousPublishDate.getUTCFullYear()}/${pmat}-${conf.shortName}-${(0, _utils.concatDate)(conf.previousPublishDate)}/`;
-      }
-    } else {
-      if (!conf.specStatus.endsWith("NOTE") && conf.specStatus !== "FPWD" && conf.specStatus !== "FPLC" && conf.specStatus !== "ED" && !conf.noRecTrack && !conf.isNoTrack && !conf.isSubmission) (0, _pubsubhub.pub)("error", "Document on track but no previous version:" + " Add `previousMaturity`, and `previousPublishDate` to ReSpec's config.");
-      if (!conf.prevVersion) conf.prevVersion = "";
-    }
-
-    if (conf.prevRecShortname && !conf.prevRecURI) conf.prevRecURI = `https://www.w3.org/TR/${conf.prevRecShortname}`;
     if (!conf.editors || conf.editors.length === 0) (0, _pubsubhub.pub)("error", "At least one editor is required");
 
     const peopCheck = function peopCheck(it) {
@@ -265,7 +199,6 @@ define(["exports", "../core/utils", "./templates/cgbg-headers", "./templates/hea
     if (conf.isTagFinding) conf.showPreviousVersion = conf.previousPublishDate ? true : false;
     conf.notYetRec = conf.isRecTrack && conf.specStatus !== "REC";
     conf.isRec = conf.isRecTrack && conf.specStatus === "REC";
-    if (conf.isRec && !conf.errata) (0, _pubsubhub.pub)("error", "Recommendations must have an errata link.");
     conf.notRec = conf.specStatus !== "REC";
     conf.prependW3C = !conf.isUnofficial;
     conf.isED = conf.specStatus === "ED";
@@ -359,11 +292,11 @@ define(["exports", "../core/utils", "./templates/cgbg-headers", "./templates/hea
     if (conf.isIGNote && !conf.charterDisclosureURI) (0, _pubsubhub.pub)("error", "IG-NOTEs must link to charter's disclosure section using `charterDisclosureURI`."); //hyperHTML.bind(sotd)`${populateSoTD(conf, sotd)}`;
 
     if (!conf.implementationReportURI && conf.isCR) {
-      (0, _pubsubhub.pub)("error", "CR documents must have an [`implementationReportURI`](https://github.com/w3c/respec/wiki/implementationReportURI) " + "that describes [implementation experience](https://www.w3.org/2019/Process-20190301/#implementation-experience).");
+      (0, _pubsubhub.pub)("error", "CR documents must have an [`implementationReportURI`](https://github.com/w3c/respec/wiki/implementationReportURI) " + "that describes [implementation experience](https://data.gov.cz/2019/Process-20190301/#implementation-experience).");
     }
 
     if (!conf.implementationReportURI && conf.isPR) {
-      (0, _pubsubhub.pub)("warn", "PR documents should include an " + " [`implementationReportURI`](https://github.com/w3c/respec/wiki/implementationReportURI)" + " that describes [implementation experience](https://www.w3.org/2019/Process-20190301/#implementation-experience).");
+      (0, _pubsubhub.pub)("warn", "PR documents should include an " + " [`implementationReportURI`](https://github.com/w3c/respec/wiki/implementationReportURI)" + " that describes [implementation experience](https://data.gov.cz/2019/Process-20190301/#implementation-experience).");
     } // Requested by https://github.com/w3c/respec/issues/504
     // Makes a record of a few auto-generated things.
 

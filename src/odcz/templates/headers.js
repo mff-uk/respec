@@ -150,39 +150,6 @@ export default conf => {
           : ""}
         ${conf.otherLinks ? conf.otherLinks.map(showLink) : ""}
       </dl>
-      ${conf.errata
-        ? html`
-            <p>
-              Please check the
-              <a href="${conf.errata}"><strong>errata</strong></a> for any
-              errors or issues reported since publication.
-            </p>
-          `
-        : ""}
-      ${conf.isRec
-        ? html`
-            <p>
-              See also
-              <a
-                href="${`http://www.w3.org/2003/03/Translations/byTechnology?technology=${
-                  conf.shortName
-                }`}"
-              >
-                <strong>translations</strong></a
-              >.
-            </p>
-          `
-        : ""}
-      ${conf.alternateFormats
-        ? html`
-            <p>
-              ${conf.multipleAlternates
-                ? "This document is also available in these non-normative formats:"
-                : "This document is also available in this non-normative format:"}
-              ${[conf.alternatesHTML]}
-            </p>
-          `
-        : ""}
       
       <hr title="Separator for header" />
     </div>

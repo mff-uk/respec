@@ -34,7 +34,6 @@ define(["exports", "../core/defaults", "../core/dfn-map", "../core/linter", "../
   const odczDefaults = {
     lint: {
       "no-headingless-sections": true,
-      "privsec-section": true,
       "no-http-props": true,
       "check-punctuation": false,
       "local-refs-exist": true

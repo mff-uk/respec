@@ -30,7 +30,6 @@ const licenses = new Map([
 const odczDefaults = {
   lint: {
     "no-headingless-sections": true,
-    "privsec-section": true,
     "no-http-props": true,
     "check-punctuation": false,
     "local-refs-exist": true,

@@ -7,7 +7,7 @@
 // Generate the headers material based on the provided configuration.
 // CONFIGURATION
 //  - specStatus: the short code for the specification's maturity level or type (required)
-//  - shortName: the small name that is used after /TR/ in published reports (required)
+//  - shortName: the small name that is used after /otevřené-formální-normy/ in published reports (required)
 //  - editors: an array of people editing the document (at least one is required). People
 //      are defined using:
 //          - name: the person's name (required)
@@ -91,7 +91,7 @@
 //          intended to be pushed to the WHATWG.
 //      - "w3c-software", a permissive and attributions license (but GPL-compatible).
 //      - "w3c-software-doc", the W3C Software and Document License
-//            https://www.w3.org/Consortium/Legal/2015/copyright-software-and-document
+//            https://data.gov.cz/Consortium/Legal/2015/copyright-software-and-document
 import { ISODate, concatDate, joinAnd } from "../core/utils";
 import cgbgHeadersTmpl from "./templates/cgbg-headers";
 import headersTmpl from "./templates/headers";
@@ -210,22 +210,7 @@ export function run(conf) {
   if (conf.isRegular && !conf.shortName) {
     pub("error", "Missing required configuration: `shortName`");
   }
-  if (conf.testSuiteURI) {
-    const url = new URL(conf.testSuiteURI, location.href);
-    const { host, pathname } = url;
-    if (
-      host === "github.com" &&
-      pathname.startsWith("/w3c/web-platform-tests/")
-    ) {
-      const msg =
-        "Web Platform Tests have moved to a new Github Organization at https://github.com/web-platform-tests. " +
-        "Please update your [`testSuiteURI`](https://github.com/w3c/respec/wiki/testSuiteURI) to point to the " +
-        `new tests repository (e.g., https://github.com/web-platform-tests/wpt/${
-          conf.shortName
-        } ).`;
-      pub("warn", msg);
-    }
-  }
+
   conf.title = document.title || "No Title";
   if (!conf.subtitle) conf.subtitle = "";
   conf.publishDate = validateDateAndRecover(
@@ -240,25 +225,9 @@ export function run(conf) {
     ? false
     : recTrackStatus.includes(conf.specStatus);
   conf.isMemberSubmission = conf.specStatus === "Member-SUBM";
-  if (conf.isMemberSubmission) {
-    const memSubmissionLogo = {
-      alt: "W3C Member Submission",
-      href: "https://www.w3.org/Submission/",
-      src: "https://www.w3.org/Icons/member_subm-v.svg",
-      width: "211",
-    };
-    conf.logos.push({ ...baseLogo, ...memSubmissionLogo });
-  }
+  
   conf.isTeamSubmission = conf.specStatus === "Team-SUBM";
-  if (conf.isTeamSubmission) {
-    const teamSubmissionLogo = {
-      alt: "W3C Team Submission",
-      href: "https://www.w3.org/TeamSubmission/",
-      src: "https://www.w3.org/Icons/team_subm-v.svg",
-      width: "211",
-    };
-    conf.logos.push({ ...baseLogo, ...teamSubmissionLogo });
-  }
+  
   conf.isSubmission = conf.isMemberSubmission || conf.isTeamSubmission;
   conf.anOrA = precededByAn.includes(conf.specStatus) ? "an" : "a";
   conf.isTagFinding =
@@ -274,66 +243,8 @@ export function run(conf) {
   let publishSpace = "TR";
   if (conf.specStatus === "Member-SUBM") publishSpace = "Submission";
   else if (conf.specStatus === "Team-SUBM") publishSpace = "TeamSubmission";
-  if (conf.isRegular)
-    conf.thisVersion = `https://www.w3.org/${publishSpace}/${conf.publishDate.getUTCFullYear()}/${
-      conf.maturity
-    }-${conf.shortName}-${concatDate(conf.publishDate)}/`;
   if (conf.specStatus === "ED") conf.thisVersion = conf.edDraftURI;
-  if (conf.isRegular)
-    conf.latestVersion = `https://www.w3.org/${publishSpace}/${
-      conf.shortName
-    }/`;
-  if (conf.isTagFinding) {
-    conf.latestVersion = `https://www.w3.org/2001/tag/doc/${conf.shortName}`;
-    conf.thisVersion = `${conf.latestVersion}-${ISODate.format(
-      conf.publishDate
-    )}`;
-  }
-  if (conf.previousPublishDate) {
-    if (!conf.previousMaturity && !conf.isTagFinding) {
-      pub("error", "`previousPublishDate` is set, but not `previousMaturity`.");
-    }
-
-    conf.previousPublishDate = validateDateAndRecover(
-      conf,
-      "previousPublishDate"
-    );
-
-    const pmat = status2maturity[conf.previousMaturity]
-      ? status2maturity[conf.previousMaturity]
-      : conf.previousMaturity;
-    if (conf.isTagFinding) {
-      conf.prevVersion = `${conf.latestVersion}-${ISODate.format(
-        conf.previousPublishDate
-      )}`;
-    } else if (conf.isCGBG) {
-      conf.prevVersion = conf.prevVersion || "";
-    } else if (conf.isBasic) {
-      conf.prevVersion = "";
-    } else {
-      conf.prevVersion = `https://www.w3.org/TR/${conf.previousPublishDate.getUTCFullYear()}/${pmat}-${
-        conf.shortName
-      }-${concatDate(conf.previousPublishDate)}/`;
-    }
-  } else {
-    if (
-      !conf.specStatus.endsWith("NOTE") &&
-      conf.specStatus !== "FPWD" &&
-      conf.specStatus !== "FPLC" &&
-      conf.specStatus !== "ED" &&
-      !conf.noRecTrack &&
-      !conf.isNoTrack &&
-      !conf.isSubmission
-    )
-      pub(
-        "error",
-        "Document on track but no previous version:" +
-          " Add `previousMaturity`, and `previousPublishDate` to ReSpec's config."
-      );
-    if (!conf.prevVersion) conf.prevVersion = "";
-  }
-  if (conf.prevRecShortname && !conf.prevRecURI)
-    conf.prevRecURI = `https://www.w3.org/TR/${conf.prevRecShortname}`;
+    
   if (!conf.editors || conf.editors.length === 0)
     pub("error", "At least one editor is required");
   const peopCheck = function(it) {
@@ -401,8 +312,6 @@ export function run(conf) {
     conf.showPreviousVersion = conf.previousPublishDate ? true : false;
   conf.notYetRec = conf.isRecTrack && conf.specStatus !== "REC";
   conf.isRec = conf.isRecTrack && conf.specStatus === "REC";
-  if (conf.isRec && !conf.errata)
-    pub("error", "Recommendations must have an errata link.");
   conf.notRec = conf.specStatus !== "REC";
   conf.prependW3C = !conf.isUnofficial;
   conf.isED = conf.specStatus === "ED";
@@ -520,7 +429,7 @@ export function run(conf) {
     pub(
       "error",
       "CR documents must have an [`implementationReportURI`](https://github.com/w3c/respec/wiki/implementationReportURI) " +
-        "that describes [implementation experience](https://www.w3.org/2019/Process-20190301/#implementation-experience)."
+        "that describes [implementation experience](https://data.gov.cz/2019/Process-20190301/#implementation-experience)."
     );
   }
   if (!conf.implementationReportURI && conf.isPR) {
@@ -528,7 +437,7 @@ export function run(conf) {
       "warn",
       "PR documents should include an " +
         " [`implementationReportURI`](https://github.com/w3c/respec/wiki/implementationReportURI)" +
-        " that describes [implementation experience](https://www.w3.org/2019/Process-20190301/#implementation-experience)."
+        " that describes [implementation experience](https://data.gov.cz/2019/Process-20190301/#implementation-experience)."
     );
   }
 

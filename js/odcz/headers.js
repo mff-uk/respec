@@ -18,11 +18,11 @@ define(["exports", "../core/utils", "./templates/cgbg-headers", "./templates/hea
 
   const name = "odcz/headers";
   _exports.name = name;
-  const W3CDate = new Intl.DateTimeFormat(["cs-cz"], {
+  const CZDate = new Intl.DateTimeFormat(["cs-cz"], {
     timeZone: "UTC",
     year: "numeric",
     month: "long",
-    day: "2-digit"
+    day: "numeric"
   });
   const status2maturity = {
     FPWD: "WD",
@@ -124,7 +124,7 @@ define(["exports", "../core/utils", "./templates/cgbg-headers", "./templates/hea
     if (!conf.subtitle) conf.subtitle = "";
     conf.publishDate = validateDateAndRecover(conf, "publishDate", document.lastModified);
     conf.publishYear = conf.publishDate.getUTCFullYear();
-    conf.publishHumanDate = W3CDate.format(conf.publishDate);
+    conf.publishHumanDate = CZDate.format(conf.publishDate);
     conf.isNoTrack = noTrackStatus.includes(conf.specStatus);
     conf.isRecTrack = conf.noRecTrack ? false : recTrackStatus.includes(conf.specStatus);
     conf.isMemberSubmission = conf.specStatus === "Member-SUBM";
@@ -273,21 +273,21 @@ define(["exports", "../core/utils", "./templates/cgbg-headers", "./templates/hea
     }
 
     conf.crEnd = validateDateAndRecover(conf, "crEnd");
-    conf.humanCREnd = W3CDate.format(conf.crEnd);
+    conf.humanCREnd = CZDate.format(conf.crEnd);
 
     if (conf.specStatus === "PR" && !conf.prEnd) {
       (0, _pubsubhub.pub)("error", `\`specStatus\` is "PR" but no \`prEnd\` is specified.`);
     }
 
     conf.prEnd = validateDateAndRecover(conf, "prEnd");
-    conf.humanPREnd = W3CDate.format(conf.prEnd);
+    conf.humanPREnd = CZDate.format(conf.prEnd);
 
     if (conf.specStatus === "PER" && !conf.perEnd) {
       (0, _pubsubhub.pub)("error", "Status is PER but no perEnd is specified");
     }
 
     conf.perEnd = validateDateAndRecover(conf, "perEnd");
-    conf.humanPEREnd = W3CDate.format(conf.perEnd);
+    conf.humanPEREnd = CZDate.format(conf.perEnd);
     conf.recNotExpected = conf.recNotExpected ? true : !conf.isRecTrack && conf.maturity == "WD" && conf.specStatus !== "FPWD-NOTE";
     if (conf.isIGNote && !conf.charterDisclosureURI) (0, _pubsubhub.pub)("error", "IG-NOTEs must link to charter's disclosure section using `charterDisclosureURI`."); //hyperHTML.bind(sotd)`${populateSoTD(conf, sotd)}`;
 

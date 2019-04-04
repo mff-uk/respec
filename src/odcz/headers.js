@@ -100,11 +100,11 @@ import { pub } from "../core/pubsubhub";
 
 export const name = "odcz/headers";
 
-const W3CDate = new Intl.DateTimeFormat(["cs-cz"], {
+const CZDate = new Intl.DateTimeFormat(["cs-cz"], {
   timeZone: "UTC",
   year: "numeric",
   month: "long",
-  day: "2-digit",
+  day: "numeric",
 });
 
 const status2maturity = {
@@ -219,7 +219,7 @@ export function run(conf) {
     document.lastModified
   );
   conf.publishYear = conf.publishDate.getUTCFullYear();
-  conf.publishHumanDate = W3CDate.format(conf.publishDate);
+  conf.publishHumanDate = CZDate.format(conf.publishDate);
   conf.isNoTrack = noTrackStatus.includes(conf.specStatus);
   conf.isRecTrack = conf.noRecTrack
     ? false
@@ -398,19 +398,19 @@ export function run(conf) {
     );
   }
   conf.crEnd = validateDateAndRecover(conf, "crEnd");
-  conf.humanCREnd = W3CDate.format(conf.crEnd);
+  conf.humanCREnd = CZDate.format(conf.crEnd);
 
   if (conf.specStatus === "PR" && !conf.prEnd) {
     pub("error", `\`specStatus\` is "PR" but no \`prEnd\` is specified.`);
   }
   conf.prEnd = validateDateAndRecover(conf, "prEnd");
-  conf.humanPREnd = W3CDate.format(conf.prEnd);
+  conf.humanPREnd = CZDate.format(conf.prEnd);
 
   if (conf.specStatus === "PER" && !conf.perEnd) {
     pub("error", "Status is PER but no perEnd is specified");
   }
   conf.perEnd = validateDateAndRecover(conf, "perEnd");
-  conf.humanPEREnd = W3CDate.format(conf.perEnd);
+  conf.humanPEREnd = CZDate.format(conf.perEnd);
 
   conf.recNotExpected = conf.recNotExpected
     ? true

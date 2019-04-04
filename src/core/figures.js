@@ -14,6 +14,9 @@ const localizationStrings = {
   en: {
     table_of_fig: "Table of Figures",
   },
+  cs: {
+    table_of_fig: "Tabulka obrázků",
+  },
   nl: {
     table_of_fig: "Lijst met figuren",
   },

@@ -22,6 +22,9 @@ const localizationStrings = {
   en: {
     issue_summary: "Issue Summary",
   },
+  cs: {
+    issue_summary: "Shrnutí issues",
+  },
   nl: {
     issue_summary: "Lijst met issues",
   },

@@ -16,6 +16,11 @@ const localizationStrings = {
     norm_references: "Normative references",
     references: "References",
   },
+  cs: {
+    info_references: "Informativní reference",
+    norm_references: "Normativní reference",
+    references: "Reference",
+  },
   nl: {
     info_references: "Informatieve referenties",
     norm_references: "Normatieve referenties",

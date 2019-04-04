@@ -84,16 +84,12 @@ define(["exports", "hyperhtml", "../../core/pubsubhub", "./show-link", "./show-l
                     ` : "none"}
               </dd>
             ` : ""}
-        ${conf.edDraftURI ? _hyperhtml.default`
-              <dt>${conf.l10n.latest_editors_draft}</dt>
-              <dd><a href="${conf.edDraftURI}">${conf.edDraftURI}</a></dd>
-            ` : ""}
         ${conf.testSuiteURI ? _hyperhtml.default`
-              <dt>Test suite:</dt>
+              <dt>Sada testů:</dt>
               <dd><a href="${conf.testSuiteURI}">${conf.testSuiteURI}</a></dd>
             ` : ""}
         ${conf.implementationReportURI ? _hyperhtml.default`
-              <dt>Implementation report:</dt>
+              <dt>Zpráva o implementaci:</dt>
               <dd>
                 <a href="${conf.implementationReportURI}"
                   >${conf.implementationReportURI}</a
@@ -105,18 +101,18 @@ define(["exports", "hyperhtml", "../../core/pubsubhub", "./show-link", "./show-l
               <dd>${[conf.bugTrackerHTML]}</dd>
             ` : ""}
         ${conf.isED && conf.prevED ? _hyperhtml.default`
-              <dt>Previous editor's draft:</dt>
+              <dt>Minulý draft:</dt>
               <dd><a href="${conf.prevED}">${conf.prevED}</a></dd>
             ` : ""}
         ${conf.showPreviousVersion ? _hyperhtml.default`
-              <dt>Previous version:</dt>
+              <dt>Minulá verze:</dt>
               <dd><a href="${conf.prevVersion}">${conf.prevVersion}</a></dd>
             ` : ""}
         ${!conf.prevRecURI ? "" : conf.isRec ? _hyperhtml.default`
-              <dt>Previous Recommendation:</dt>
+              <dt>Minulé doporučení:</dt>
               <dd><a href="${conf.prevRecURI}">${conf.prevRecURI}</a></dd>
             ` : _hyperhtml.default`
-              <dt>Latest Recommendation:</dt>
+              <dt>Poslední doporučení:</dt>
               <dd><a href="${conf.prevRecURI}">${conf.prevRecURI}</a></dd>
             `}
         <dt>${conf.multipleEditors ? conf.l10n.editors : conf.l10n.editor}</dt>

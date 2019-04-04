@@ -77,21 +77,15 @@ export default conf => {
               </dd>
             `
           : ""}
-        ${conf.edDraftURI
-          ? html`
-              <dt>${conf.l10n.latest_editors_draft}</dt>
-              <dd><a href="${conf.edDraftURI}">${conf.edDraftURI}</a></dd>
-            `
-          : ""}
         ${conf.testSuiteURI
           ? html`
-              <dt>Test suite:</dt>
+              <dt>Sada testů:</dt>
               <dd><a href="${conf.testSuiteURI}">${conf.testSuiteURI}</a></dd>
             `
           : ""}
         ${conf.implementationReportURI
           ? html`
-              <dt>Implementation report:</dt>
+              <dt>Zpráva o implementaci:</dt>
               <dd>
                 <a href="${conf.implementationReportURI}"
                   >${conf.implementationReportURI}</a
@@ -107,13 +101,13 @@ export default conf => {
           : ""}
         ${conf.isED && conf.prevED
           ? html`
-              <dt>Previous editor's draft:</dt>
+              <dt>Minulý draft:</dt>
               <dd><a href="${conf.prevED}">${conf.prevED}</a></dd>
             `
           : ""}
         ${conf.showPreviousVersion
           ? html`
-              <dt>Previous version:</dt>
+              <dt>Minulá verze:</dt>
               <dd><a href="${conf.prevVersion}">${conf.prevVersion}</a></dd>
             `
           : ""}
@@ -121,11 +115,11 @@ export default conf => {
           ? ""
           : conf.isRec
           ? html`
-              <dt>Previous Recommendation:</dt>
+              <dt>Minulé doporučení:</dt>
               <dd><a href="${conf.prevRecURI}">${conf.prevRecURI}</a></dd>
             `
           : html`
-              <dt>Latest Recommendation:</dt>
+              <dt>Poslední doporučení:</dt>
               <dd><a href="${conf.prevRecURI}">${conf.prevRecURI}</a></dd>
             `}
         <dt>${conf.multipleEditors ? conf.l10n.editors : conf.l10n.editor}</dt>

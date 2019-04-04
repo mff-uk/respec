@@ -300,7 +300,7 @@ export function run(conf) {
     conf.rdfStatus = status2rdf[conf.specStatus];
   }
   conf.showThisVersion = !conf.isNoTrack || conf.isTagFinding;
-  conf.showPreviousVersion =
+/*  conf.showPreviousVersion =
     conf.specStatus !== "FPWD" &&
     conf.specStatus !== "FPLC" &&
     conf.specStatus !== "ED" &&
@@ -309,7 +309,7 @@ export function run(conf) {
   if (conf.specStatus.endsWith("NOTE") && !conf.prevVersion)
     conf.showPreviousVersion = false;
   if (conf.isTagFinding)
-    conf.showPreviousVersion = conf.previousPublishDate ? true : false;
+    conf.showPreviousVersion = conf.previousPublishDate ? true : false;*/
   conf.notYetRec = conf.isRecTrack && conf.specStatus !== "REC";
   conf.isRec = conf.isRecTrack && conf.specStatus === "REC";
   conf.notRec = conf.specStatus !== "REC";

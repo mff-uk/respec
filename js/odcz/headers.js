@@ -194,9 +194,17 @@ define(["exports", "../core/utils", "./templates/cgbg-headers", "./templates/hea
     }
 
     conf.showThisVersion = !conf.isNoTrack || conf.isTagFinding;
-    conf.showPreviousVersion = conf.specStatus !== "FPWD" && conf.specStatus !== "FPLC" && conf.specStatus !== "ED" && !conf.isNoTrack && !conf.isSubmission;
-    if (conf.specStatus.endsWith("NOTE") && !conf.prevVersion) conf.showPreviousVersion = false;
-    if (conf.isTagFinding) conf.showPreviousVersion = conf.previousPublishDate ? true : false;
+    /*  conf.showPreviousVersion =
+        conf.specStatus !== "FPWD" &&
+        conf.specStatus !== "FPLC" &&
+        conf.specStatus !== "ED" &&
+        !conf.isNoTrack &&
+        !conf.isSubmission;
+      if (conf.specStatus.endsWith("NOTE") && !conf.prevVersion)
+        conf.showPreviousVersion = false;
+      if (conf.isTagFinding)
+        conf.showPreviousVersion = conf.previousPublishDate ? true : false;*/
+
     conf.notYetRec = conf.isRecTrack && conf.specStatus !== "REC";
     conf.isRec = conf.isRecTrack && conf.specStatus === "REC";
     conf.notRec = conf.specStatus !== "REC";

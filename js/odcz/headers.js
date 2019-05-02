@@ -141,7 +141,6 @@ define(["exports", "../core/utils", "./templates/cgbg-headers", "./templates/hea
     conf.maturity = status2maturity[conf.specStatus] ? status2maturity[conf.specStatus] : conf.specStatus;
     let publishSpace = "TR";
     if (conf.specStatus === "Member-SUBM") publishSpace = "Submission";else if (conf.specStatus === "Team-SUBM") publishSpace = "TeamSubmission";
-    if (conf.specStatus === "ED") conf.thisVersion = conf.edDraftURI;
     if (!conf.editors || conf.editors.length === 0) (0, _pubsubhub.pub)("error", "At least one editor is required");
 
     const peopCheck = function peopCheck(it) {

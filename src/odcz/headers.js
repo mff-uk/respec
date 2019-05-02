@@ -243,7 +243,6 @@ export function run(conf) {
   let publishSpace = "TR";
   if (conf.specStatus === "Member-SUBM") publishSpace = "Submission";
   else if (conf.specStatus === "Team-SUBM") publishSpace = "TeamSubmission";
-  if (conf.specStatus === "ED") conf.thisVersion = conf.edDraftURI;
     
   if (!conf.editors || conf.editors.length === 0)
     pub("error", "At least one editor is required");

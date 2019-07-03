@@ -10,14 +10,24 @@ define(["exports", "hyperhtml"], function (_exports, _hyperhtml) {
 
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-  // Module odcz/informative
-  // Mark specific sections as informative, based on CSS
+  function _templateObject() {
+    const data = _taggedTemplateLiteral(["<p><em>Tato sekce nen\xED normativn\xED.</em></p>"]);
+
+    _templateObject = function _templateObject() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
   const name = "odcz/informative";
   _exports.name = name;
 
   function run() {
     Array.from(document.querySelectorAll("section.informative")).map(informative => informative.querySelector("h2, h3, h4, h5, h6")).filter(heading => heading).forEach(heading => {
-      heading.after(_hyperhtml.default`<p><em>Tato sekce není normativní.</em></p>`);
+      heading.after((0, _hyperhtml.default)(_templateObject()));
     });
   }
 });

@@ -7,12 +7,15 @@
  * It's a standalone module that can be imported into other modules.
  *
  */
-/* globals IDBKeyRange, DOMException */
-import { pub } from "./pubsubhub";
+import { flatten } from "./utils.js";
+import { pub } from "./pubsubhub.js";
 export const name = "core/biblio-db";
 
 const ALLOWED_TYPES = new Set(["alias", "reference"]);
-// Database initialization, tracked by "readyPromise"
+/**
+ * Database initialization tracker
+ * @type {Promise<IDBDatabase>}
+ */
 const readyPromise = new Promise((resolve, reject) => {
   let request;
   try {
@@ -216,21 +219,20 @@ export const biblioDB = {
         return true;
       })
       .map(id => Object.assign({ id }, data[id]))
-      .reduce((collector, obj) => {
+      .forEach(obj => {
         if (obj.aliasOf) {
-          collector.alias.add(obj);
+          aliasesAndRefs.alias.add(obj);
         } else {
-          collector.reference.add(obj);
+          aliasesAndRefs.reference.add(obj);
         }
-        return collector;
-      }, aliasesAndRefs);
+      });
     const promisesToAdd = Object.keys(aliasesAndRefs)
       .map(type => {
         return Array.from(aliasesAndRefs[type]).map(details =>
           this.add(type, details)
         );
       })
-      .reduce((collector, promises) => collector.concat(promises), []);
+      .reduce(flatten, []);
     await Promise.all(promisesToAdd);
   },
   /**

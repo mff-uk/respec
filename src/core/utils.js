@@ -1,35 +1,12 @@
-/* jshint browser: true */
-/* globals console */
 // Module core/utils
 // As the name implies, this contains a ragtag gang of methods that just don't fit
 // anywhere else.
-import { lang as docLang } from "./l10n";
-import marked from "marked";
-import { pub } from "./pubsubhub";
+import { lang as docLang } from "./l10n.js";
+import { pub } from "./pubsubhub.js";
 export const name = "core/utils";
 
-marked.setOptions({
-  sanitize: false,
-  gfm: true,
-  headerIds: false,
-});
-
 const spaceOrTab = /^[ |\t]*/;
-const endsWithSpace = /\s+$/gm;
 const dashes = /-/g;
-const gtEntity = /&gt;/gm;
-const ampEntity = /&amp;/gm;
-
-export function markdownToHtml(text) {
-  const normalizedLeftPad = normalizePadding(text);
-  // As markdown is pulled from HTML, > and & are already escaped and
-  // so blockquotes aren't picked up by the parser. This fixes it.
-  const potentialMarkdown = normalizedLeftPad
-    .replace(gtEntity, ">")
-    .replace(ampEntity, "&");
-  const result = marked(potentialMarkdown);
-  return result;
-}
 
 export const ISODate = new Intl.DateTimeFormat(["en-ca-iso8601"], {
   timeZone: "UTC",
@@ -37,41 +14,6 @@ export const ISODate = new Intl.DateTimeFormat(["en-ca-iso8601"], {
   month: "2-digit",
   day: "2-digit",
 });
-
-const inlineElems = new Set([
-  "a",
-  "abbr",
-  "acronym",
-  "b",
-  "bdo",
-  "big",
-  "br",
-  "button",
-  "cite",
-  "code",
-  "dfn",
-  "em",
-  "i",
-  "img",
-  "input",
-  "kbd",
-  "label",
-  "map",
-  "object",
-  "q",
-  "samp",
-  "script",
-  "select",
-  "small",
-  "span",
-  "strong",
-  "sub",
-  "sup",
-  "textarea",
-  "time",
-  "tt",
-  "var",
-]);
 
 const resourceHints = new Set([
   "dns-prefetch",
@@ -166,106 +108,6 @@ export function createResourceHint(opts) {
   return linkElem;
 }
 
-export function normalizePadding(text = "") {
-  if (!text) {
-    return "";
-  }
-  if (typeof text !== "string") {
-    throw TypeError("Invalid input");
-  }
-  if (text === "\n") {
-    return "\n";
-  }
-
-  /**
-   * @param {Node} node
-   * @return {node is Text}
-   */
-  function isTextNode(node) {
-    return node !== null && node.nodeType === Node.TEXT_NODE;
-  }
-  // Force into body
-  const parserInput = `<body>${text}`;
-  const doc = new DOMParser().parseFromString(parserInput, "text/html");
-  // Normalize block level elements children first
-  Array.from(doc.body.children)
-    .filter(elem => !inlineElems.has(elem.localName))
-    .filter(elem => elem.localName !== "pre")
-    .filter(elem => elem.localName !== "table")
-    .forEach(elem => {
-      elem.innerHTML = normalizePadding(elem.innerHTML);
-    });
-  // Normalize root level now
-  Array.from(doc.body.childNodes)
-    .filter(node => isTextNode(node) && node.textContent.trim() === "")
-    .forEach(node =>
-      node.parentElement.replaceChild(doc.createTextNode("\n"), node)
-    );
-  // Normalize text node
-  if (!isTextNode(doc.body.firstChild)) {
-    Array.from(doc.body.firstChild.children)
-      .filter(child => child.localName !== "table")
-      .forEach(child => {
-        child.innerHTML = normalizePadding(child.innerHTML);
-      });
-  }
-  doc.normalize();
-  // use the first space as an indicator of how much to chop off the front
-  const firstSpace = doc.body.textContent
-    .replace(/^ *\n/, "")
-    .split("\n")
-    .filter(item => item && item.startsWith(" "))[0];
-  const chop = firstSpace ? firstSpace.match(/ +/)[0].length : 0;
-  if (chop) {
-    // Chop chop from start, but leave pre elem alone
-    Array.from(doc.body.childNodes)
-      .filter(node => node.localName !== "pre")
-      .filter(isTextNode)
-      .filter(node => {
-        // we care about text next to a block level element
-        const prevSib = node.previousElementSibling;
-        const nextTo = prevSib
-          ? prevSib.localName
-          : node.parentElement.localName;
-        // and we care about text elements that finish on a new line
-        return (
-          !inlineElems.has(nextTo) || node.textContent.trim().includes("\n")
-        );
-      })
-      .reduce((replacer, node) => {
-        // We need to retain white space if the text Node is next to an in-line element
-        let padding = "";
-        const prevSib = node.previousElementSibling;
-        const nextTo = prevSib
-          ? prevSib.localName
-          : node.parentElement.localName;
-        if (/^[\t ]/.test(node.textContent) && inlineElems.has(nextTo)) {
-          padding = node.textContent.match(/^\s+/)[0];
-        }
-        node.textContent = padding + node.textContent.replace(replacer, "");
-        return replacer;
-      }, new RegExp(`^ {1,${chop}}`, "gm"));
-    // deal with pre elements... we can chop whitespace from their siblings
-    const endsWithSpace = new RegExp(`\\ {${chop}}$`, "gm");
-    Array.from(doc.body.querySelectorAll("pre"))
-      .map(elem => elem.previousSibling)
-      .filter(isTextNode)
-      .reduce((chop, node) => {
-        if (endsWithSpace.test(node.textContent)) {
-          node.textContent = node.textContent.substr(
-            0,
-            node.textContent.length - chop
-          );
-        }
-        return chop;
-      }, chop);
-  }
-  const result = endsWithSpace.test(doc.body.innerHTML)
-    ? `${doc.body.innerHTML.trimRight()}\n`
-    : doc.body.innerHTML;
-  return result;
-}
-
 // RESPEC STUFF
 export function removeReSpec(doc) {
   doc.querySelectorAll(".remove, script[data-requiremodule]").forEach(elem => {
@@ -352,12 +194,37 @@ export class IDBKeyVal {
   }
 
   /**
+   * @param {string[]} keys
+   * @returns {[string, any][]}
+   */
+  async getMany(keys) {
+    const keySet = new Set(keys);
+    const results = [];
+    let cursor = await this.idb.transaction(this.storeName).store.openCursor();
+    while (cursor) {
+      if (keySet.has(cursor.key)) {
+        results.push([cursor.key, cursor.value]);
+      }
+      cursor = await cursor.continue();
+    }
+    return results;
+  }
+
+  /**
    * @param {string} key
    * @param {any} value
    */
   async set(key, value) {
     const tx = this.idb.transaction(this.storeName, "readwrite");
     tx.objectStore(this.storeName).put(value, key);
+    return await tx.complete;
+  }
+
+  async addMany(entries) {
+    const tx = this.idb.transaction(this.storeName, "readwrite");
+    for (const [key, value] of entries) {
+      tx.objectStore(this.storeName).put(value, key);
+    }
     return await tx.complete;
   }
 
@@ -421,22 +288,6 @@ export function xmlEscape(s) {
  */
 export function norm(str) {
   return str.trim().replace(/\s+/g, " ");
-}
-
-// semverCompare
-// https://github.com/substack/semver-compare
-export function semverCompare(a, b) {
-  const pa = a.split(".");
-  const pb = b.split(".");
-  for (let i = 0; i < 3; i++) {
-    const na = Number(pa[i]);
-    const nb = Number(pb[i]);
-    if (na > nb) return 1;
-    if (nb > na) return -1;
-    if (!isNaN(na) && isNaN(nb)) return 1;
-    if (isNaN(na) && !isNaN(nb)) return -1;
-  }
-  return 0;
 }
 
 // --- DATE HELPERS -------------------------------------------------------------------------------
@@ -558,17 +409,15 @@ export function runTransforms(content, flist) {
 
 /**
  * Cached request handler
- * @param {Request} request
- * @param {Object} maxAge cache expiration duration in ms. defaults to 24 hours (86400000 ms)
+ * @param {RequestInfo} input
+ * @param {number} maxAge cache expiration duration in ms. defaults to 24 hours (86400000 ms)
  * @return {Promise<Response>}
  *  if a cached response is available and it's not stale, return it
  *  else: request from network, cache and return fresh response.
  *    If network fails, return a stale cached version if exists (else throw)
  */
-export async function fetchAndCache(request, maxAge = 86400000) {
-  if (typeof request === "string" || request instanceof URL) {
-    request = new Request(request);
-  }
+export async function fetchAndCache(input, maxAge = 86400000) {
+  const request = new Request(input);
   const url = new URL(request.url);
 
   // use data from cache data if valid and render
@@ -600,7 +449,7 @@ export async function fetchAndCache(request, maxAge = 86400000) {
   }
 
   // cache response
-  if (cache) {
+  if (cache && response.ok) {
     const clonedResponse = response.clone();
     const customHeaders = new Headers(response.headers);
     const expiryDate = new Date(Date.now() + maxAge);
@@ -610,7 +459,6 @@ export async function fetchAndCache(request, maxAge = 86400000) {
     });
     // put in cache, and forget it (there is no recovery if it throws, but that's ok).
     await cache.put(request, cacheResponse).catch(console.error);
-    return await cache.match(request);
   }
   return response;
 }
@@ -626,7 +474,7 @@ export async function fetchAndCache(request, maxAge = 86400000) {
 export function flatten(collector, item) {
   const items = !Array.isArray(item)
     ? [item]
-    : [...item.values()].reduce(flatten, []);
+    : item.slice().reduce(flatten, []);
   collector.push(...items);
   return collector;
 }
@@ -685,13 +533,19 @@ export function addId(elem, pfx = "", txt = "", noLC = false) {
  * Returns all the descendant text nodes of an element.
  * @param {Node} el
  * @param {string[]} exclusions node localName to exclude
+ * @param {boolean} options.wsNodes if nodes that only have whitespace are returned.
  * @returns {Text[]}
  */
-export function getTextNodes(el, exclusions = []) {
+export function getTextNodes(el, exclusions = [], options = { wsNodes: true }) {
+  const exclusionQuery = exclusions.join(", ");
   const acceptNode = (/** @type {Text} */ node) => {
-    return exclusions.includes(node.parentElement.localName)
-      ? NodeFilter.FILTER_REJECT
-      : NodeFilter.FILTER_ACCEPT;
+    if (!options.wsNodes && !node.data.trim()) {
+      return NodeFilter.FILTER_REJECT;
+    }
+    if (exclusionQuery && node.parentElement.closest(exclusionQuery)) {
+      return NodeFilter.FILTER_REJECT;
+    }
+    return NodeFilter.FILTER_ACCEPT;
   };
   const nodeIterator = document.createNodeIterator(
     el,
@@ -768,7 +622,9 @@ export function getDfnTitles(elem, { isDefinition = false } = {}) {
 /**
  * For an element (usually <a>), returns an array of targets that
  * element might refer to, of the form
- * @typedef {{for: string, title: string}} LinkTarget
+ * @typedef {object} LinkTarget
+ * @property {string} for
+ * @property {string} title
  *
  * For an element like:
  *  <p data-link-for="Int1"><a data-link-for="Int2">Int3.member</a></p>
@@ -913,4 +769,81 @@ export function msgIdGenerator(namespace, counter = 0) {
   return () => {
     return gen.next().value;
   };
+}
+
+export class InsensitiveStringSet extends Set {
+  /**
+   * @param {Array<String>} [keys] Optional, initial keys
+   */
+  constructor(keys = []) {
+    super();
+    for (const key of keys) {
+      this.add(key);
+    }
+  }
+  /**
+   * @param {string} key
+   */
+  add(key) {
+    if (!this.has(key) && !this.getCanonicalKey(key)) {
+      return super.add(key);
+    }
+    return this;
+  }
+  /**
+   * @param {string} key
+   */
+  has(key) {
+    return (
+      super.has(key) ||
+      [...this.keys()].some(
+        existingKey => existingKey.toLowerCase() === key.toLowerCase()
+      )
+    );
+  }
+  /**
+   * @param {string} key
+   */
+  delete(key) {
+    return super.has(key)
+      ? super.delete(key)
+      : super.delete(this.getCanonicalKey(key));
+  }
+  /**
+   * @param {string} key
+   */
+  getCanonicalKey(key) {
+    return super.has(key)
+      ? key
+      : [...this.keys()].find(
+          existingKey => existingKey.toLowerCase() === key.toLowerCase()
+        );
+  }
+}
+
+export function makeSafeCopy(node) {
+  const clone = node.cloneNode(true);
+  clone.querySelectorAll("[id]").forEach(elem => elem.removeAttribute("id"));
+  clone.querySelectorAll("dfn").forEach(dfn => renameElement(dfn, "span"));
+  if (clone.hasAttribute("id")) clone.removeAttribute("id");
+  removeCommentNodes(clone);
+  return clone;
+}
+
+export function removeCommentNodes(node) {
+  const walker = document.createTreeWalker(node, NodeFilter.SHOW_COMMENT);
+  for (const comment of [...walkTree(walker)]) {
+    comment.remove();
+  }
+}
+
+/**
+ * @template {Node} T
+ * @param {TreeWalker<T>} walker
+ * @return {IterableIterator<T>}
+ */
+function* walkTree(walker) {
+  while (walker.nextNode()) {
+    yield /** @type {T} */ (walker.currentNode);
+  }
 }

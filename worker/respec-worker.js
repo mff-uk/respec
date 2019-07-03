@@ -1,13 +1,9 @@
-// ReSpec Worker v0.2.0
+// ReSpec Worker v1.0.0
 "use strict";
 try {
   importScripts("https://data.gov.cz/otevřené-formální-normy/static/js/respec-highlight.js");
-  self.hljs.configure({
-    tabReplace: "  ", // 2 spaces
-    languages: ["abnf", "css", "http", "javascript", "json", "markdown", "xml"],
-  });
 } catch (err) {
-  console.error("Network error loading/configuring highlighter", err);
+  console.error("Network error loading highlighter", err);
 }
 
 self.addEventListener("message", ({ data: originalData }) => {

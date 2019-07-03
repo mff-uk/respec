@@ -1,7 +1,16 @@
 "use strict";
+
+import {
+  flushIframes,
+  makeBasicConfig,
+  makeDefaultBody,
+  makeRSDoc,
+  makeStandardOps,
+} from "../SpecHelper.js";
+
 describe("Core — Can I Use", () => {
   afterAll(flushIframes);
-  const apiURL = `${window.location.origin}/tests/data/caniuse/{FEATURE}.json`;
+  const apiURL = `${window.location.origin}/tests/data/caniuse/FEATURE.json`;
 
   it("uses meaningful defaults", async () => {
     const ops = makeStandardOps({
@@ -15,9 +24,8 @@ describe("Core — Can I Use", () => {
     const { caniuse } = doc.defaultView.respecConfig;
 
     expect(caniuse.feature).toBe("FEATURE");
-    expect(caniuse.maxAge).toBe(60 * 60 * 24 * 1000);
     expect(caniuse.versions).toBe(4);
-    expect(caniuse.browsers).toEqual(["chrome", "firefox", "safari", "edge"]);
+    expect(caniuse.browsers).toBeUndefined(); // uses server default
   });
 
   it("allows overriding defaults", async () => {
@@ -26,7 +34,6 @@ describe("Core — Can I Use", () => {
         feature: "FEATURE",
         versions: 10,
         browsers: ["firefox", "chrome"],
-        maxAge: 0,
         apiURL,
       },
     });
@@ -35,7 +42,6 @@ describe("Core — Can I Use", () => {
     const { caniuse } = doc.defaultView.respecConfig;
 
     expect(caniuse.feature).toBe("FEATURE");
-    expect(caniuse.maxAge).toBe(0);
     expect(caniuse.browsers).toEqual(["firefox", "chrome"]);
     expect(caniuse.versions).toBe(10);
   });
@@ -51,23 +57,6 @@ describe("Core — Can I Use", () => {
     expect(doc.querySelector(".caniuse-stats")).toBeFalsy();
   });
 
-  it("removes unsupported browsers", async () => {
-    const ops = makeStandardOps({
-      caniuse: {
-        feature: "FEATURE",
-        browsers: ["FireFox", "GoogleChrome", "SafarIE", "Opera"],
-        apiURL,
-      },
-    });
-    const doc = await makeRSDoc(ops);
-    await doc.respecIsReady;
-    const { caniuse } = doc.defaultView.respecConfig;
-
-    expect(caniuse.browsers.length).toBe(2);
-    expect(caniuse.browsers).toEqual(["firefox", "opera"]);
-    // TODO: check for `pub` warnings
-  });
-
   it("shows caniuse.com link on error", async () => {
     const ops = makeStandardOps({
       caniuse: {
@@ -80,14 +69,14 @@ describe("Core — Can I Use", () => {
 
     const link = doc.querySelector(".caniuse-stats a");
     expect(link.textContent).toBe("caniuse.com");
-    expect(link.href).toBe("https://caniuse.com/#feat=FEATURE");
+    expect(link.href).toBe("https://caniuse.com/FEATURE");
   });
 
   it("shows caniuse browser support table", async () => {
     const ops = makeStandardOps({
       caniuse: {
         feature: "FEATURE",
-        apiURL: `${window.location.origin}/tests/data/caniuse/{FEATURE}.json`,
+        apiURL,
         browsers: ["firefox", "chrome", "opera"],
         versions: 5,
       },
@@ -98,7 +87,7 @@ describe("Core — Can I Use", () => {
     const stats = doc.querySelector(".caniuse-stats");
 
     const moreInfoLink = stats.querySelector("a");
-    expect(moreInfoLink.href).toBe("https://caniuse.com/#feat=FEATURE");
+    expect(moreInfoLink.href).toBe("https://caniuse.com/FEATURE");
     expect(moreInfoLink.textContent.trim()).toBe("More info");
 
     const browsers = stats.querySelectorAll(".caniuse-browser");
@@ -109,7 +98,7 @@ describe("Core — Can I Use", () => {
     expect(chromeVersions.length).toBe(2);
 
     const firefoxVersions = firefox.querySelectorAll("ul li.caniuse-cell");
-    expect(firefoxVersions.length).toBe(4);
+    expect(firefoxVersions.length).toBe(5);
 
     const firefoxButton = firefox.querySelector("button");
     expect(firefoxButton.textContent.trim()).toBe("Firefox 61");

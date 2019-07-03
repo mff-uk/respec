@@ -2,6 +2,7 @@
 
 pre.idl {
   padding: 1em;
+  position: relative;
 }
 
 @media print {
@@ -121,4 +122,10 @@ a.idlEnumItem {
   background-image: none;
   border-color: rgba(197, 197, 197, 0.5);
   box-shadow: none;
+}
+
+@media print {
+  .respec-button-copy-paste {
+    visibility: hidden;
+  }
 }

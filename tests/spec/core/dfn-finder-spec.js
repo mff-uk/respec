@@ -1,4 +1,12 @@
 "use strict";
+
+import {
+  flushIframes,
+  makeBasicConfig,
+  makeDefaultBody,
+  makeRSDoc,
+} from "../SpecHelper.js";
+
 describe("Core — Definition finder", () => {
   afterAll(flushIframes);
 
@@ -19,7 +27,7 @@ describe("Core — Definition finder", () => {
       body: makeDefaultBody() + bodyText,
     };
     const doc = await makeRSDoc(ops);
-    const [dfn] = doc.getElementsByTagName("dfn");
+    const [, dfn] = doc.getElementsByTagName("dfn");
     expect(dfn.dataset.lt).toBe("bar()|bar|foo.bar()|foo.bar");
     expect(dfn.classList.contains("respec-offending-element")).toBeFalsy();
   });

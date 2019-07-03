@@ -3,8 +3,8 @@
  * Linter rule "no-http-props". Makes sure the there are no URLs that
  * start with http:// in the ReSpec config.
  */
-import LinterRule from "../LinterRule";
-import { lang as defaultLang } from "../l10n";
+import LinterRule from "../LinterRule.js";
+import { lang as defaultLang } from "../l10n.js";
 
 const name = "no-http-props";
 
@@ -35,8 +35,7 @@ function lintingFunction(conf, doc) {
     // this check is expensive, so separate step
     .filter(key =>
       new URL(conf[key], doc.location.href).href.startsWith("http://")
-    )
-    .reduce((collector, key) => collector.concat(key), []);
+    );
   if (!offendingMembers.length) {
     return;
   }

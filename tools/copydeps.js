@@ -2,29 +2,29 @@
 
 "use strict";
 const path = require("path");
-const fsp = require("fs-extra");
-
+const fs = require("fs").promises;
+const depsPath = path.resolve("./js/deps/");
 const srcDesMap = [
-  ["./node_modules/clipboard/dist/clipboard.js", "./js/deps/"],
   [
     "./node_modules/handlebars/dist/handlebars.runtime.js",
     "./js/deps/handlebars.js",
   ],
-  ["./node_modules/highlight.js/src/styles/github.css", "./assets/"],
+  ["./node_modules/highlight.js/styles/github.css", "./assets/"],
   ["./node_modules/hyperhtml/umd.js", "./js/deps/hyperhtml.js"],
   ["./node_modules/jquery/dist/jquery.slim.js", "./js/deps/jquery.js"],
   ["./node_modules/marked/lib/marked.js", "./js/deps/"],
   ["./node_modules/requirejs/require.js", "./js/deps/"],
   ["./node_modules/text/text.js", "./js/deps/"],
-  ["./node_modules/webidl2/lib/webidl2.js", "./js/deps/"],
-  ["./node_modules/webidl2/lib/writer.js", "./js/deps/webidl2writer.js"],
+  ["./node_modules/webidl2/dist/webidl2.js", "./js/deps/"],
   ["./node_modules/pluralize/pluralize.js", "./js/deps/"],
-  ["./node_modules/idb/build/idb.js", "./js/deps/"],
-];
+  ["./node_modules/idb/build/iife/with-async-ittr-min.js", "./js/deps/idb.js"],
+].map(([source, dest]) => {
+  return [path.resolve(source), path.resolve(dest)];
+});
 
 const deprecated = [
   [
-    "./node_modules/domReady/domReady.js",
+    path.resolve("./node_modules/domReady/domReady.js"),
     "Use standard DOMContentLoaded and document.readyState instead.",
   ],
 ];
@@ -34,11 +34,12 @@ async function cp(source, dest) {
   const actualDestination = path.extname(dest)
     ? dest
     : path.resolve(dest, baseName);
-  await fsp.copy(source, actualDestination);
+  await fs.copyFile(source, actualDestination);
 }
 
 // Copy them again
 async function copyDeps() {
+  await fs.mkdir(depsPath);
   const copyPromises = srcDesMap.map(([source, dest]) => cp(source, dest));
   await Promise.all(copyPromises);
 }
@@ -50,7 +51,7 @@ async function copyDeprecated() {
 
     const message = `The dependency \`deps/${basename}\` is deprecated. ${guide}`;
     const wrapper = `define(["deps/_${basename}"], dep => { console.warn("${message}"); return dep; });`;
-    await fsp.writeFile(`./js/deps/${basename}.js`, wrapper);
+    await fs.writeFile(path.resolve(`./js/deps/${basename}.js`), wrapper);
   });
   await Promise.all(promises);
 }
@@ -58,8 +59,12 @@ async function copyDeprecated() {
 // Delete dependent files
 (async () => {
   try {
-    await fsp.remove("./js/deps/");
-    await fsp.remove("./js/core/css/github.css");
+    await deleteFolder(depsPath);
+    try {
+      await fs.unlink(path.resolve("./js/core/css/github.css"));
+    } catch {
+      // File not found.
+    }
     await copyDeps();
     await copyDeprecated();
   } catch (err) {
@@ -67,3 +72,22 @@ async function copyDeprecated() {
     process.exit(1);
   }
 })();
+
+async function deleteFolder(path) {
+  try {
+    await fs.stat(path);
+  } catch (err) {
+    if (err.errno === -2) return; // doesn't exist
+    throw err;
+  }
+  for (const file of await fs.readdir(path)) {
+    const curPath = `${path}/${file}`;
+    const stat = await fs.lstat(curPath);
+    if (stat.isDirectory()) {
+      await deleteFolder(curPath);
+    } else {
+      await fs.unlink(curPath);
+    }
+  }
+  await fs.rmdir(path);
+}

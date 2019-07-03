@@ -90,13 +90,13 @@
 //      - "w3c-software", a permissive and attributions license (but GPL-compatible).
 //      - "w3c-software-doc", the W3C Software and Document License
 //            https://www.w3.org/Consortium/Legal/2015/copyright-software-and-document
-import { ISODate, concatDate, joinAnd } from "../core/utils";
-import cgbgHeadersTmpl from "./templates/cgbg-headers";
-import cgbgSotdTmpl from "./templates/cgbg-sotd";
-import headersTmpl from "./templates/headers";
+import { ISODate, concatDate, joinAnd } from "../core/utils.js";
+import cgbgHeadersTmpl from "./templates/cgbg-headers.js";
+import cgbgSotdTmpl from "./templates/cgbg-sotd.js";
+import headersTmpl from "./templates/headers.js";
 import hyperHTML from "hyperhtml";
-import { pub } from "../core/pubsubhub";
-import sotdTmpl from "./templates/sotd";
+import { pub } from "../core/pubsubhub.js";
+import sotdTmpl from "./templates/sotd.js";
 
 export const name = "w3c/headers";
 
@@ -167,17 +167,18 @@ const status2long = {
   "FPWD-NOTE": "First Public Working Group Note",
   "LC-NOTE": "Last Call Working Draft",
 };
-const recTrackStatus = ["FPWD", "WD", "FPLC", "LC", "CR", "PR", "PER", "REC"];
+const maybeRecTrack = ["FPWD", "WD"];
+const recTrackStatus = ["FPLC", "LC", "CR", "PR", "PER", "REC"];
 const noTrackStatus = [
-  "MO",
-  "unofficial",
   "base",
-  "finding",
-  "draft-finding",
-  "CG-DRAFT",
-  "CG-FINAL",
   "BG-DRAFT",
   "BG-FINAL",
+  "CG-DRAFT",
+  "CG-FINAL",
+  "draft-finding",
+  "finding",
+  "MO",
+  "unofficial",
 ];
 const cgbg = ["CG-DRAFT", "CG-FINAL", "BG-DRAFT", "BG-FINAL"];
 const precededByAn = ["ED", "IG-NOTE"];
@@ -266,13 +267,14 @@ export function run(conf) {
       const msg =
         "Web Platform Tests have moved to a new Github Organization at https://github.com/web-platform-tests. " +
         "Please update your [`testSuiteURI`](https://github.com/w3c/respec/wiki/testSuiteURI) to point to the " +
-        `new tests repository (e.g., https://github.com/web-platform-tests/wpt/${
-          conf.shortName
-        } ).`;
+        `new tests repository (e.g., https://github.com/web-platform-tests/wpt/${conf.shortName} ).`;
       pub("warn", msg);
     }
   }
   conf.title = document.title || "No Title";
+  if (document.title && conf.isPreview && conf.prNumber) {
+    document.title = `Preview of PR #${conf.prNumber}: ${document.title}`;
+  }
   if (!conf.subtitle) conf.subtitle = "";
   conf.publishDate = validateDateAndRecover(
     conf,
@@ -284,7 +286,7 @@ export function run(conf) {
   conf.isNoTrack = noTrackStatus.includes(conf.specStatus);
   conf.isRecTrack = conf.noRecTrack
     ? false
-    : recTrackStatus.includes(conf.specStatus);
+    : recTrackStatus.concat(maybeRecTrack).includes(conf.specStatus);
   conf.isMemberSubmission = conf.specStatus === "Member-SUBM";
   if (conf.isMemberSubmission) {
     const memSubmissionLogo = {
@@ -326,9 +328,7 @@ export function run(conf) {
     }-${conf.shortName}-${concatDate(conf.publishDate)}/`;
   if (conf.specStatus === "ED") conf.thisVersion = conf.edDraftURI;
   if (conf.isRegular)
-    conf.latestVersion = `https://www.w3.org/${publishSpace}/${
-      conf.shortName
-    }/`;
+    conf.latestVersion = `https://www.w3.org/${publishSpace}/${conf.shortName}/`;
   if (conf.isTagFinding) {
     conf.latestVersion = `https://www.w3.org/2001/tag/doc/${conf.shortName}`;
     conf.thisVersion = `${conf.latestVersion}-${ISODate.format(
@@ -384,6 +384,16 @@ export function run(conf) {
     pub("error", "At least one editor is required");
   const peopCheck = function(it) {
     if (!it.name) pub("error", "All authors and editors must have a name.");
+    if (it.orcid) {
+      try {
+        it.orcid = normalizeOrcid(it.orcid);
+      } catch (e) {
+        pub("error", `"${it.orcid}" is not an ORCID. ${e.message}`);
+        // A failed orcid link could link to something outside of orcid,
+        // which would be misleading.
+        delete it.orcid;
+      }
+    }
   };
   if (conf.editors) {
     conf.editors.forEach(peopCheck);
@@ -416,11 +426,7 @@ export function run(conf) {
     });
   if (conf.bugTracker) {
     if (conf.bugTracker.new && conf.bugTracker.open) {
-      conf.bugTrackerHTML = `<a href='${conf.bugTracker.new}'>${
-        conf.l10n.file_a_bug
-      }</a> ${conf.l10n.open_parens}<a href='${conf.bugTracker.open}'>${
-        conf.l10n.open_bugs
-      }</a>${conf.l10n.close_parens}`;
+      conf.bugTrackerHTML = `<a href='${conf.bugTracker.new}'>${conf.l10n.file_a_bug}</a> ${conf.l10n.open_parens}<a href='${conf.bugTracker.open}'>${conf.l10n.open_bugs}</a>${conf.l10n.close_parens}`;
     } else if (conf.bugTracker.open) {
       conf.bugTrackerHTML = `<a href='${conf.bugTracker.open}'>open bugs</a>`;
     } else if (conf.bugTracker.new) {
@@ -461,17 +467,18 @@ export function run(conf) {
   conf.dashDate = ISODate.format(conf.publishDate);
   conf.publishISODate = conf.publishDate.toISOString();
   conf.shortISODate = ISODate.format(conf.publishDate);
-  Object.defineProperty(conf, "wgId", {
-    get() {
-      if (!this.hasOwnProperty("wgPatentURI")) {
-        return "";
-      }
-      // it's always at "pp-impl" + 1
-      const urlParts = this.wgPatentURI.split("/");
-      const pos = urlParts.findIndex(item => item === "pp-impl") + 1;
-      return urlParts[pos] || "";
-    },
-  });
+  if (conf.hasOwnProperty("wgPatentURI") && !Array.isArray(conf.wgPatentURI)) {
+    Object.defineProperty(conf, "wgId", {
+      get() {
+        // it's always at "pp-impl" + 1
+        const urlParts = this.wgPatentURI.split("/");
+        const pos = urlParts.findIndex(item => item === "pp-impl") + 1;
+        return urlParts[pos] || "";
+      },
+    });
+  } else {
+    conf.wgId = conf.wgId ? conf.wgId : "";
+  }
   // configuration done - yay!
 
   // insert into document
@@ -559,17 +566,28 @@ export function run(conf) {
   }
   conf.perEnd = validateDateAndRecover(conf, "perEnd");
   conf.humanPEREnd = W3CDate.format(conf.perEnd);
-
-  conf.recNotExpected = conf.recNotExpected
-    ? true
-    : !conf.isRecTrack &&
-      conf.maturity == "WD" &&
-      conf.specStatus !== "FPWD-NOTE";
-  if (conf.isIGNote && !conf.charterDisclosureURI)
+  conf.recNotExpected =
+    conf.noRecTrack || conf.recNotExpected
+      ? true
+      : !conf.isRecTrack &&
+        conf.maturity == "WD" &&
+        conf.specStatus !== "FPWD-NOTE";
+  if (conf.noRecTrack && recTrackStatus.includes(conf.specStatus)) {
+    pub(
+      "error",
+      `Document configured as [\`noRecTrack\`](https://github.com/w3c/respec/wiki/noRecTrack), but its status ("${
+        conf.specStatus
+      }") puts it on the W3C Rec Track. Status cannot be any of: ${recTrackStatus.join(
+        ", "
+      )}. [More info](https://github.com/w3c/respec/wiki/noRecTrack).`
+    );
+  }
+  if (conf.isIGNote && !conf.charterDisclosureURI) {
     pub(
       "error",
       "IG-NOTEs must link to charter's disclosure section using `charterDisclosureURI`."
     );
+  }
 
   hyperHTML.bind(sotd)`${populateSoTD(conf, sotd)}`;
 
@@ -632,13 +650,12 @@ function collectSotdContent(sotd, { isTagFinding = false }) {
   // that becomes the custom content.
   while (sotdClone.hasChildNodes()) {
     if (
-      !isElement(sotdClone.firstChild) ||
-      sotdClone.firstChild.localName !== "section"
+      isElement(sotdClone.firstChild) &&
+      sotdClone.firstChild.localName === "section"
     ) {
-      additionalContent.appendChild(sotdClone.firstChild);
-      continue;
+      break;
     }
-    break;
+    additionalContent.appendChild(sotdClone.firstChild);
   }
   if (isTagFinding && !additionalContent.hasChildNodes()) {
     pub(
@@ -652,6 +669,43 @@ function collectSotdContent(sotd, { isTagFinding = false }) {
     // Whatever sections are left, we throw at the end.
     additionalSections: sotdClone.childNodes,
   };
+}
+
+/**
+ * @param {string} orcid Either an ORCID URL or just the 16-digit ID which comes after the /
+ * @return {string} the full ORCID URL. Throws an error if the ID is invalid.
+ */
+function normalizeOrcid(orcid) {
+  const orcidUrl = new URL(orcid, "https://orcid.org/");
+  if (orcidUrl.origin !== "https://orcid.org") {
+    throw new Error(
+      `The origin should be "https://orcid.org", not "${orcidUrl.origin}".`
+    );
+  }
+
+  // trailing slash would mess up checksum
+  const orcidId = orcidUrl.pathname.slice(1).replace(/\/$/, "");
+  if (!/^\d{4}-\d{4}-\d{4}-\d{3}(\d|X)$/.test(orcidId)) {
+    throw new Error(
+      `ORCIDs have the format "1234-1234-1234-1234", not "${orcidId}"`
+    );
+  }
+
+  // calculate checksum as per https://support.orcid.org/hc/en-us/articles/360006897674-Structure-of-the-ORCID-Identifier
+  const lastDigit = orcidId[orcidId.length - 1];
+  const remainder = orcidId
+    .split("")
+    .slice(0, -1)
+    .filter(c => /\d/.test(c))
+    .map(Number)
+    .reduce((acc, c) => (acc + c) * 2, 0);
+  const lastDigitInt = (12 - (remainder % 11)) % 11;
+  const lastDigitShould = lastDigitInt === 10 ? "X" : String(lastDigitInt);
+  if (lastDigit !== lastDigitShould) {
+    throw new Error(`"${orcidId}" has an invalid checksum.`);
+  }
+
+  return orcidUrl.href;
 }
 
 /**

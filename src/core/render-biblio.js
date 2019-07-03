@@ -2,11 +2,11 @@
 // Module core/render-biblio
 // renders the biblio data pre-processed in core/biblio
 
-import { addId } from "./utils";
-import { biblio } from "./biblio";
-import { lang as defaultLang } from "../core/l10n";
+import { addId } from "./utils.js";
+import { biblio } from "./biblio.js";
+import { lang as defaultLang } from "../core/l10n.js";
 import hyperHTML from "hyperhtml";
-import { pub } from "./pubsubhub";
+import { pub } from "./pubsubhub.js";
 
 export const name = "core/render-biblio";
 
@@ -121,7 +121,7 @@ export function run(conf) {
     refsec.appendChild(sec);
 
     const aliases = getAliases(goodRefs);
-    fixRefUrls(uniqueRefs, aliases);
+    decorateInlineReference(uniqueRefs, aliases);
     warnBadRefs(badRefs);
   }
 
@@ -166,7 +166,9 @@ export function renderInlineCitation(ref) {
   return hyperHTML`[<cite><a class="bibref" href="${href}">${key}</a></cite>]`;
 }
 
-// renders a reference
+/**
+ * renders a reference
+ */
 function showRef({ ref, refcontent }) {
   const refId = `bib-${ref.toLowerCase()}`;
   if (refcontent) {
@@ -230,7 +232,7 @@ export function stringifyReference(ref) {
   if (ref.authors && ref.authors.length) {
     output += ref.authors.join("; ");
     if (ref.etAl) output += " et al";
-    output += ".";
+    output += ". ";
   }
   if (ref.publisher) {
     output = `${output} ${endWithDot(ref.publisher)} `;
@@ -241,7 +243,9 @@ export function stringifyReference(ref) {
   return output;
 }
 
-// get aliases for a reference "key"
+/**
+ * get aliases for a reference "key"
+ */
 function getAliases(refs) {
   return refs.reduce((aliases, ref) => {
     const key = ref.refcontent.id;
@@ -253,8 +257,11 @@ function getAliases(refs) {
   }, new Map());
 }
 
-// fix biblio reference URLs
-function fixRefUrls(refs, aliases) {
+/**
+ * fix biblio reference URLs
+ * Add title attribute to references
+ */
+function decorateInlineReference(refs, aliases) {
   refs
     .map(({ ref, refcontent }) => {
       const refUrl = `#bib-${ref.toLowerCase()}`;
@@ -263,14 +270,20 @@ function fixRefUrls(refs, aliases) {
         .map(alias => `a.bibref[href="#bib-${alias.toLowerCase()}"]`)
         .join(",");
       const elems = document.querySelectorAll(selectors);
-      return { refUrl, elems };
+      return { refUrl, elems, refcontent };
     })
-    .forEach(({ refUrl, elems }) => {
-      elems.forEach(a => a.setAttribute("href", refUrl));
+    .forEach(({ refUrl, elems, refcontent }) => {
+      elems.forEach(a => {
+        a.setAttribute("href", refUrl);
+        a.setAttribute("title", refcontent.title);
+        a.dataset.linkType = "biblio";
+      });
     });
 }
 
-// warn about bad references
+/**
+ * warn about bad references
+ */
 function warnBadRefs(badRefs) {
   badRefs.forEach(({ ref }) => {
     const badrefs = [

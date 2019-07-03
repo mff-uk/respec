@@ -1,12 +1,9 @@
 "use strict";
+
+import { makeBasicConfig, makeDefaultBody, makeRSDoc } from "../SpecHelper.js";
+import { children } from "../../../src/core/utils.js";
+
 describe("Core - Structure", () => {
-  let utils;
-  beforeAll(done => {
-    require(["core/utils"], u => {
-      utils = u;
-      done();
-    });
-  });
   const body = `
       ${makeDefaultBody()}
       <section class="introductory">
@@ -135,10 +132,10 @@ describe("Core - Structure", () => {
     const doc = await makeRSDoc(ops);
     const toc = doc.getElementById("toc");
     expect(toc.querySelector("h2").textContent).toBe("Table of Contents");
-    expect(utils.children(toc, "ol > li").length).toBe(7);
+    expect(children(toc, "ol > li").length).toBe(7);
     expect(toc.querySelectorAll("li").length).toBe(19);
     expect(toc.querySelector("ol > li").textContent).toBe("Abstract");
-    expect(utils.children(toc, "ol > li a[href='#intro']").length).toBe(1);
+    expect(children(toc, "ol > li a[href='#intro']").length).toBe(1);
   });
 
   it("should limit ToC depth with maxTocLevel", async () => {
@@ -188,5 +185,52 @@ describe("Core - Structure", () => {
     expect(title).toBeTruthy();
     const anchor = doc.querySelector("#back-to-top a[href='#title']");
     expect(anchor).toBeTruthy();
+  });
+
+  it("localizes table of contents", async () => {
+    const ops = {
+      config: makeBasicConfig(),
+      htmlAttrs: {
+        lang: "es",
+      },
+      body: `
+      <section id='sotd'>
+        <p>This is required.</p>
+      </section>
+      <section class="informative" id="intro">
+        <h2>Introduction</h2>
+      </section>
+      `,
+    };
+    const doc = await makeRSDoc(ops);
+    const { textContent } = doc.querySelector("#toc h2");
+    expect(doc.documentElement.lang).toBe("es");
+    expect(textContent).toContain("Tabla de Contenidos");
+  });
+
+  it("finds and updates empty anchors correctly", async () => {
+    const ops = {
+      config: makeBasicConfig(),
+      body: `
+        <section id='sotd'>
+          <p>Structure of the document.</p>
+        </section>
+        <section>
+          <h2>Sample Interface</h2>
+        </section>
+        <section>
+        <a class="test" href="#sample-interface">    </a>
+        <a class="test" href="#sample-interface">
+        </a>
+        <a class="test" href="#sample-interface">
+                </a>
+        </section>`,
+    };
+    const doc = await makeRSDoc(ops);
+    const anchors = doc.querySelectorAll("a.test");
+    anchors.forEach(anchor => {
+      expect(anchor.classList).toContain("sec-ref");
+      expect(anchor.textContent).toContain("Sample Interface");
+    });
   });
 });

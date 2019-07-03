@@ -8,12 +8,12 @@ import {
   showInlineError,
   showInlineWarning,
   wrapInner,
-} from "./utils";
-import { run as addExternalReferences } from "./xref";
-import { lang as defaultLang } from "./l10n";
-import { definitionMap } from "./dfn-map";
-import { linkInlineCitations } from "./data-cite";
-import { pub } from "./pubsubhub";
+} from "./utils.js";
+import { run as addExternalReferences } from "./xref.js";
+import { lang as defaultLang } from "./l10n.js";
+import { definitionMap } from "./dfn-map.js";
+import { linkInlineCitations } from "./data-cite.js";
+import { pub } from "./pubsubhub.js";
 export const name = "core/link-to-dfn";
 const l10n = {
   en: {
@@ -27,7 +27,7 @@ export async function run(conf) {
 
   const titleToDfns = mapTitleToDfns();
 
-  /** @type {Element[]} */
+  /** @type {HTMLElement[]} */
   const possibleExternalLinks = [];
   /** @type {HTMLAnchorElement[]} */
   const badLinks = [];
@@ -43,11 +43,6 @@ export async function run(conf) {
       return findLinkTarget(target, ant, titleToDfns, possibleExternalLinks);
     });
     if (!foundDfn && linkTargets.length !== 0) {
-      // ignore WebIDL
-      if (ant.closest("pre.idl")) {
-        ant.replaceWith(...ant.childNodes);
-        return;
-      }
       if (ant.dataset.cite === "") {
         badLinks.push(ant);
       } else {
@@ -142,10 +137,10 @@ function assignDfnId(dfn, title) {
 }
 
 /**
- * @param {{ for: string, title: string }} target
+ * @param {import("./utils.js").LinkTarget} target
  * @param {HTMLAnchorElement} ant
  * @param {Record<string, Record<string, HTMLElement>>} titleToDfns
- * @param {Element[]} possibleExternalLinks
+ * @param {HTMLElement[]} possibleExternalLinks
  */
 function findLinkTarget(target, ant, titleToDfns, possibleExternalLinks) {
   const { linkFor } = ant.dataset;
@@ -163,14 +158,17 @@ function findLinkTarget(target, ant, titleToDfns, possibleExternalLinks) {
     ant.dataset.lt = lt[0] || dfn.textContent;
     possibleExternalLinks.push(ant);
   } else {
-    ant.href = `#${dfn.id}`;
-    ant.classList.add("internalDFN");
+    if (ant.dataset.idl === "partial") {
+      possibleExternalLinks.push(ant);
+    } else {
+      ant.href = `#${dfn.id}`;
+      ant.classList.add("internalDFN");
+    }
   }
   // add a bikeshed style indication of the type of link
   if (!ant.hasAttribute("data-link-type")) {
     ant.dataset.linkType = "dfn";
   }
-
   if (isCode(dfn)) {
     wrapAsCode(ant, dfn);
   }
@@ -231,26 +229,29 @@ function shouldWrapByCode(dfn, term) {
  * Examples: a[data-cite="spec"], dfn[data-cite="spec"], dfn.externalDFN
  */
 function findExplicitExternalLinks() {
+  /** @type {NodeListOf<HTMLElement>} */
   const links = document.querySelectorAll(
     "a[data-cite]:not([data-cite='']):not([data-cite*='#']), " +
       "dfn[data-cite]:not([data-cite='']):not([data-cite*='#'])"
   );
+  /** @type {NodeListOf<HTMLElement>} */
+  const externalDFNs = document.querySelectorAll("dfn.externalDFN");
   return [...links]
     .filter(el => {
+      // ignore empties
+      if (el.textContent.trim() === "") return false;
       /** @type {HTMLElement} */
       const closest = el.closest("[data-cite]");
       return !closest || closest.dataset.cite !== "";
     })
-    .concat([...document.querySelectorAll("dfn.externalDFN")]);
+    .concat(...externalDFNs);
 }
 
 function showLinkingError(elems) {
   elems.forEach(elem => {
     showInlineWarning(
       elem,
-      `Found linkless \`<a>\` element with text "${
-        elem.textContent
-      }" but no matching \`<dfn>\``,
+      `Found linkless \`<a>\` element with text "${elem.textContent}" but no matching \`<dfn>\``,
       "Linking error: not matching <dfn>"
     );
   });

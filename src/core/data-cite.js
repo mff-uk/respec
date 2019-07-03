@@ -14,9 +14,13 @@
  * Usage:
  * https://github.com/w3c/respec/wiki/data--cite
  */
-import { biblio, resolveRef, updateFromNetwork } from "./biblio";
-import { refTypeFromContext, showInlineWarning, wrapInner } from "./utils";
-import hyperHTML from "hyperhtml";
+import { biblio, resolveRef, updateFromNetwork } from "./biblio.js";
+import {
+  refTypeFromContext,
+  showInlineError,
+  showInlineWarning,
+  wrapInner,
+} from "./utils.js";
 export const name = "core/data-cite";
 
 function requestLookup(conf) {
@@ -58,16 +62,36 @@ function requestLookup(conf) {
           elem.textContent = title;
         }
         elem.href = href;
+        if (!path && !frag) {
+          const cite = document.createElement("cite");
+          elem.replaceWith(cite);
+          cite.append(elem);
+        }
         break;
       }
       case "dfn": {
-        const anchor = hyperHTML`<a href="${href}">`;
+        const anchor = document.createElement("a");
+        anchor.href = href;
         if (!elem.textContent) {
           anchor.textContent = title;
           elem.append(anchor);
         } else {
           wrapInner(elem, anchor);
         }
+        if (!path && !frag) {
+          const cite = document.createElement("cite");
+          cite.append(anchor);
+          elem.append(cite);
+        }
+        if ("export" in elem.dataset) {
+          showInlineError(
+            elem,
+            "Exporting an linked external definition is not allowed. Please remove the `data-export` attribute",
+            "Please remove the `data-export` attribute."
+          );
+          delete elem.dataset.export;
+        }
+        elem.dataset.noExport = "";
         break;
       }
     }
@@ -129,10 +153,12 @@ export async function run(conf) {
       return key.toLowerCase() !== (conf.shortName || "").toLowerCase();
     })
     .forEach(({ isNormative, key }) => {
-      const refSink = isNormative
-        ? conf.normativeReferences
-        : conf.informativeReferences;
-      refSink.add(key);
+      if (!isNormative && !conf.normativeReferences.has(key)) {
+        conf.informativeReferences.add(key);
+        return;
+      }
+      conf.normativeReferences.add(key);
+      conf.informativeReferences.delete(key);
     });
 }
 

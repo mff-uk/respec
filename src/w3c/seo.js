@@ -1,8 +1,8 @@
 // Module w3c/seo
 // Manages SEO information for documents
 // e.g. set the canonical URL for the document if configured
-import { biblio } from "../core/biblio";
-import { pub } from "../core/pubsubhub";
+import { biblio } from "../core/biblio.js";
+import { pub } from "../core/pubsubhub.js";
 export const name = "w3c/seo";
 export function run(conf) {
   const trLatestUri = conf.shortName
@@ -134,7 +134,9 @@ async function addJSONLDInfo(conf, doc) {
   doc.head.appendChild(script);
 }
 
-// Turn editors and authors into a list of JSON-LD relationships
+/**
+ * Turn editors and authors into a list of JSON-LD relationships
+ */
 function addPerson({ name, url, mailto, company, companyURL }) {
   const ed = {
     type: "Person",
@@ -151,7 +153,9 @@ function addPerson({ name, url, mailto, company, companyURL }) {
   return ed;
 }
 
-// Create a reference URL from the ref
+/**
+ * Create a reference URL from the ref
+ */
 function addRef(ref) {
   const { href: id, title: name, href: url } = ref;
   return {

@@ -10,22 +10,28 @@ define(["exports", "../core/utils", "hyperhtml", "../core/inline-idl-parser", ".
 
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-  // @ts-check
-  // Module core/inlines
-  // Process all manners of inline information. These are done together despite it being
-  // seemingly a better idea to orthogonalise them. The issue is that processing text nodes
-  // is harder to orthogonalise, and in some browsers can also be particularly slow.
-  // Things that are recognised are <abbr>/<acronym> which when used once are applied
-  // throughout the document, [[REFERENCES]]/[[!REFERENCES]], {{{ IDL }}} and RFC2119 keywords.
-  // CONFIGURATION:
-  //  These options do not configure the behaviour of this module per se, rather this module
-  //  manipulates them (oftentimes being the only source to set them) so that other modules
-  //  may rely on them.
-  //  - normativeReferences: a map of normative reference identifiers.
-  //  - informativeReferences: a map of informative reference identifiers.
-  //  - respecRFC2119: a list of the number of times each RFC2119
-  //    key word was used.  NOTE: While each member is a counter, at this time
-  //    the counter is not used.
+  function _templateObject2() {
+    const data = _taggedTemplateLiteral(["\n              <abbr title=\"", "\">", "</abbr>"]);
+
+    _templateObject2 = function _templateObject2() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject() {
+    const data = _taggedTemplateLiteral(["<em class=\"rfc2119\" title=\"", "\">", "</em>"]);
+
+    _templateObject = function _templateObject() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
   const name = "odcz/inlines";
   _exports.name = name;
   const rfc2119Usage = {};
@@ -54,11 +60,11 @@ define(["exports", "../core/utils", "hyperhtml", "../core/inline-idl-parser", ".
 
     const aKeys = [...abbrMap.keys()];
     aKeys.sort((a, b) => b.length - a.length);
-    const abbrRx = aKeys.length ? `(?:\\b${aKeys.join("\\b)|(?:\\b")}\\b)` : null; // PROCESSING
+    const abbrRx = aKeys.length ? "(?:\\b".concat(aKeys.join("\\b)|(?:\\b"), "\\b)") : null; // PROCESSING
 
     const txts = (0, _utils.getTextNodes)(document.body, ["pre"]);
-    const rx = new RegExp(`(${["\\bMUST(?:\\s+NOT)?\\b", "\\bSHOULD(?:\\s+NOT)?\\b", "\\bSHALL(?:\\s+NOT)?\\b", "\\bMAY\\b", "\\b(?:NOT\\s+)?REQUIRED\\b", "\\b(?:NOT\\s+)?RECOMMENDED\\b", "\\bOPTIONAL\\b", "(?:{{3}\\s*.*\\s*}{3})", // inline IDL references,
-    "(?:\\[\\[(?:!|\\\\|\\?)?[A-Za-z0-9\\.-]+\\]\\])", ...(abbrRx ? [abbrRx] : [])].join("|")})`);
+    const rx = new RegExp("(".concat(["\\bMUST(?:\\s+NOT)?\\b", "\\bSHOULD(?:\\s+NOT)?\\b", "\\bSHALL(?:\\s+NOT)?\\b", "\\bMAY\\b", "\\b(?:NOT\\s+)?REQUIRED\\b", "\\b(?:NOT\\s+)?RECOMMENDED\\b", "\\bOPTIONAL\\b", "(?:{{3}\\s*.*\\s*}{3})", // inline IDL references,
+    "(?:\\[\\[(?:!|\\\\|\\?)?[A-Za-z0-9\\.-]+\\]\\])", ...(abbrRx ? [abbrRx] : [])].join("|"), ")"));
 
     for (const txt of txts) {
       const subtxt = txt.data.split(rx);
@@ -75,7 +81,7 @@ define(["exports", "../core/utils", "hyperhtml", "../core/inline-idl-parser", ".
           // RFC 2119
           if (/MUST(?:\s+NOT)?|SHOULD(?:\s+NOT)?|SHALL(?:\s+NOT)?|MAY|(?:NOT\s+)?REQUIRED|(?:NOT\s+)?RECOMMENDED|OPTIONAL/.test(matched)) {
             matched = matched.split(/\s+/).join(" ");
-            df.appendChild(_hyperhtml.default`<em class="rfc2119" title="${matched}">${matched}</em>`); // remember which ones were used
+            df.appendChild(hyperHTML(_templateObject(), matched, matched)); // remember which ones were used
 
             rfc2119Usage[matched] = true;
           } else if (matched.startsWith("{{{")) {
@@ -83,7 +89,7 @@ define(["exports", "../core/utils", "hyperhtml", "../core/inline-idl-parser", ".
             const ref = matched.replace(/^\{{3}/, "").replace(/\}{3}$/, "").trim();
 
             if (ref.startsWith("\\")) {
-              df.appendChild(document.createTextNode(`{{{${ref.replace(/^\\/, "")}}}}`));
+              df.appendChild(document.createTextNode("{{{".concat(ref.replace(/^\\/, ""), "}}}")));
             } else {
               df.appendChild((0, _inlineIdlParser.idlStringToHtml)(ref));
             }
@@ -94,7 +100,7 @@ define(["exports", "../core/utils", "hyperhtml", "../core/inline-idl-parser", ".
             ref = ref.replace(/\]\]$/, "");
 
             if (ref.startsWith("\\")) {
-              df.appendChild(document.createTextNode(`[[${ref.replace(/^\\/, "")}]]`));
+              df.appendChild(document.createTextNode("[[".concat(ref.replace(/^\\/, ""), "]]")));
             } else {
               const {
                 type,
@@ -106,7 +112,7 @@ define(["exports", "../core/utils", "hyperhtml", "../core/inline-idl-parser", ".
 
               if (illegal && !conf.normativeReferences.has(cleanRef)) {
                 (0, _utils.showInlineWarning)(cite.childNodes[1], // cite element
-                "Normative references in informative sections are not allowed. " + `Remove '!' from the start of the reference \`[[!${ref}]]\``);
+                "Normative references in informative sections are not allowed. " + "Remove '!' from the start of the reference `[[!".concat(ref, "]]`"));
               }
 
               if (type === "informative" && !illegal) {
@@ -117,11 +123,10 @@ define(["exports", "../core/utils", "hyperhtml", "../core/inline-idl-parser", ".
             }
           } else if (abbrMap.has(matched)) {
             // ABBR
-            if (txt.parentElement.tagName === "ABBR") df.appendChild(document.createTextNode(matched));else df.appendChild(_hyperhtml.default`
-              <abbr title="${abbrMap.get(matched)}">${matched}</abbr>`);
+            if (txt.parentElement.tagName === "ABBR") df.appendChild(document.createTextNode(matched));else df.appendChild(hyperHTML(_templateObject2(), abbrMap.get(matched), matched));
           } else {
             // FAIL -- not sure that this can really happen
-            (0, _pubsubhub.pub)("error", `Found token '${matched}' but it does not correspond to anything`);
+            (0, _pubsubhub.pub)("error", "Found token '".concat(matched, "' but it does not correspond to anything"));
           }
         }
       }

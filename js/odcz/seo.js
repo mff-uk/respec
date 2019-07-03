@@ -13,7 +13,7 @@ define(["exports", "../core/biblio", "../core/pubsubhub"], function (_exports, _
   _exports.name = name;
 
   function run(conf) {
-    const trLatestUri = conf.shortName ? `https://data.gov.cz/otevřené-formální-normy/${conf.shortName}/` : null;
+    const trLatestUri = conf.shortName ? "https://data.gov.cz/otev\u0159en\xE9-form\xE1ln\xED-normy/".concat(conf.shortName, "/") : null;
 
     switch (conf.canonicalURI) {
       case "edDraft":
@@ -41,7 +41,7 @@ define(["exports", "../core/biblio", "../core/pubsubhub"], function (_exports, _
           try {
             conf.canonicalURI = new URL(conf.canonicalURI, document.location.href).href;
           } catch (err) {
-            (0, _pubsubhub.pub)("warn", `CanonicalURI is an invalid URL: ${err.message}`);
+            (0, _pubsubhub.pub)("warn", "CanonicalURI is an invalid URL: ".concat(err.message));
             conf.canonicalURI = null;
           }
         } else if (trLatestUri) {

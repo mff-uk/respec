@@ -12,7 +12,7 @@ define(["exports", "../core/utils", "../core/pubsubhub"], function (_exports, _u
   // Inserts a link to the appropriate W3C style for the specification's maturity level.
   // CONFIGURATION
   //  - specStatus: the short code for the specification's maturity level or type (required)
-  const name = "odcz/style";
+  const name = "odcz/style.js";
   _exports.name = name;
 
   function attachFixupScript(doc, version) {
@@ -26,7 +26,7 @@ define(["exports", "../core/utils", "../core/pubsubhub"], function (_exports, _u
       });
     }
 
-    script.src = `https://data.gov.cz/otevřené-formální-normy/static/js/fixup.js`;
+    script.src = "https://data.gov.cz/otev\u0159en\xE9-form\xE1ln\xED-normy/static/js/fixup.js";
     doc.body.appendChild(script);
   } // Make a best effort to attach meta viewport at the top of the head.
   // Other plugins might subsequently push it down, but at least we start
@@ -115,7 +115,7 @@ define(["exports", "../core/utils", "../core/pubsubhub"], function (_exports, _u
 
   function styleMover(linkURL) {
     return exportDoc => {
-      const odczStyle = exportDoc.querySelector(`head link[href="${linkURL}"]`);
+      const odczStyle = exportDoc.querySelector("head link[href=\"".concat(linkURL, "\"]"));
       exportDoc.querySelector("head").append(odczStyle);
     };
   }
@@ -138,8 +138,8 @@ define(["exports", "../core/utils", "../core/pubsubhub"], function (_exports, _u
       });
     }
 
-    const finalVersionPath = version ? `${version}/` : "";
-    const finalStyleURL = `https://data.gov.cz/otevřené-formální-normy/static/css/${conf.specStatus}.css`;
+    const finalVersionPath = version ? "".concat(version, "/") : "";
+    const finalStyleURL = "https://data.gov.cz/otev\u0159en\xE9-form\xE1ln\xED-normy/static/css/".concat(conf.specStatus, ".css");
     (0, _utils.linkCSS)(document, finalStyleURL); // Make sure the ODCZ stylesheet is the last stylesheet, as required by W3C Pub Rules.
 
     const moveStyle = styleMover(finalStyleURL);

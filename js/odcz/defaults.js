@@ -56,7 +56,8 @@ define(["exports", "../core/defaults", "../core/dfn-map", "../core/linter", "../
       width: 64,
       url: "https://data.gov.cz/"
     }],
-    addSectionLinks: true
+    addSectionLinks: true,
+    xref: true
   };
 
   function run(conf) {

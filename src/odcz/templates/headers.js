@@ -1,8 +1,8 @@
 import html from "hyperhtml";
-import { pub } from "../../core/pubsubhub";
-import showLink from "./show-link";
-import showLogo from "./show-logo";
-import showPeople from "./show-people";
+import { pub } from "../../core/pubsubhub.js";
+import showLink from "./show-link.js";
+import showLogo from "./show-logo.js";
+import showPeople from "./show-people.js";
 
 const ccLicense = "https://creativecommons.org/licenses/by/3.0/";
 const w3cLicense = "https://www.w3.org/Consortium/Legal/copyright-documents";
@@ -123,7 +123,7 @@ export default conf => {
               <dd><a href="${conf.prevRecURI}">${conf.prevRecURI}</a></dd>
             `}
         <dt>${conf.multipleEditors ? conf.l10n.editors : conf.l10n.editor}</dt>
-        ${showPeople(conf, "Editor", conf.editors)}
+        ${showPeople(conf.editors)}
         ${Array.isArray(conf.formerEditors) && conf.formerEditors.length > 0
           ? html`
               <dt>
@@ -131,7 +131,7 @@ export default conf => {
                   ? conf.l10n.former_editors
                   : conf.l10n.former_editor}
               </dt>
-              ${showPeople(conf, "Editor", conf.formerEditors)}
+              ${showPeople(conf.formerEditors)}
             `
           : ""}
         ${conf.authors
@@ -139,7 +139,7 @@ export default conf => {
               <dt>
                 ${conf.multipleAuthors ? conf.l10n.authors : conf.l10n.author}
               </dt>
-              ${showPeople(conf, "Author", conf.authors)}
+              ${showPeople(conf.authors)}
             `
           : ""}
         ${conf.otherLinks ? conf.otherLinks.map(showLink) : ""}

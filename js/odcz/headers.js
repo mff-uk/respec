@@ -93,7 +93,7 @@ define(["exports", "../core/utils", "./templates/cgbg-headers", "./templates/hea
       return new Date(formattedDate);
     }
 
-    const msg = `[\`${prop}\`](https://github.com/w3c/respec/wiki/${prop}) ` + `is not a valid date: "${conf[prop]}". Expected format 'YYYY-MM-DD'.`;
+    const msg = "[`".concat(prop, "`](https://github.com/w3c/respec/wiki/").concat(prop, ") ") + "is not a valid date: \"".concat(conf[prop], "\". Expected format 'YYYY-MM-DD'.");
     (0, _pubsubhub.pub)("error", msg);
     return new Date(_utils.ISODate.format(new Date()));
   }
@@ -145,6 +145,17 @@ define(["exports", "../core/utils", "./templates/cgbg-headers", "./templates/hea
 
     const peopCheck = function peopCheck(it) {
       if (!it.name) (0, _pubsubhub.pub)("error", "All authors and editors must have a name.");
+
+      if (it.orcid) {
+        try {
+          it.orcid = normalizeOrcid(it.orcid);
+        } catch (e) {
+          (0, _pubsubhub.pub)("error", "\"".concat(it.orcid, "\" is not an ORCID. ").concat(e.message)); // A failed orcid link could link to something outside of orcid,
+          // which would be misleading.
+
+          delete it.orcid;
+        }
+      }
     };
 
     if (conf.editors) {
@@ -169,18 +180,18 @@ define(["exports", "../core/utils", "./templates/cgbg-headers", "./templates/hea
     });
     conf.multipleAlternates = conf.alternateFormats && conf.alternateFormats.length > 1;
     conf.alternatesHTML = conf.alternateFormats && (0, _utils.joinAnd)(conf.alternateFormats, alt => {
-      let optional = alt.hasOwnProperty("lang") && alt.lang ? ` hreflang='${alt.lang}'` : "";
-      optional += alt.hasOwnProperty("type") && alt.type ? ` type='${alt.type}'` : "";
-      return `<a rel='alternate' href='${alt.uri}'${optional}>${alt.label}</a>`;
+      let optional = alt.hasOwnProperty("lang") && alt.lang ? " hreflang='".concat(alt.lang, "'") : "";
+      optional += alt.hasOwnProperty("type") && alt.type ? " type='".concat(alt.type, "'") : "";
+      return "<a rel='alternate' href='".concat(alt.uri, "'").concat(optional, ">").concat(alt.label, "</a>");
     });
 
     if (conf.bugTracker) {
       if (conf.bugTracker.new && conf.bugTracker.open) {
-        conf.bugTrackerHTML = `<a href='${conf.bugTracker.new}'>${conf.l10n.file_a_bug}</a> ${conf.l10n.open_parens}<a href='${conf.bugTracker.open}'>${conf.l10n.open_bugs}</a>${conf.l10n.close_parens}`;
+        conf.bugTrackerHTML = "<a href='".concat(conf.bugTracker.new, "'>").concat(conf.l10n.file_a_bug, "</a> ").concat(conf.l10n.open_parens, "<a href='").concat(conf.bugTracker.open, "'>").concat(conf.l10n.open_bugs, "</a>").concat(conf.l10n.close_parens);
       } else if (conf.bugTracker.open) {
-        conf.bugTrackerHTML = `<a href='${conf.bugTracker.open}'>open bugs</a>`;
+        conf.bugTrackerHTML = "<a href='".concat(conf.bugTracker.open, "'>open bugs</a>");
       } else if (conf.bugTracker.new) {
-        conf.bugTrackerHTML = `<a href='${conf.bugTracker.new}'>file a bug</a>`;
+        conf.bugTrackerHTML = "<a href='".concat(conf.bugTracker.new, "'>file a bug</a>");
       }
     }
 
@@ -218,20 +229,22 @@ define(["exports", "../core/utils", "./templates/cgbg-headers", "./templates/hea
     conf.dashDate = _utils.ISODate.format(conf.publishDate);
     conf.publishISODate = conf.publishDate.toISOString();
     conf.shortISODate = _utils.ISODate.format(conf.publishDate);
-    Object.defineProperty(conf, "wgId", {
-      get() {
-        if (!this.hasOwnProperty("wgPatentURI")) {
-          return "";
-        } // it's always at "pp-impl" + 1
 
+    if (conf.hasOwnProperty("wgPatentURI") && !Array.isArray(conf.wgPatentURI)) {
+      Object.defineProperty(conf, "wgId", {
+        get() {
+          // it's always at "pp-impl" + 1
+          const urlParts = this.wgPatentURI.split("/");
+          const pos = urlParts.findIndex(item => item === "pp-impl") + 1;
+          return urlParts[pos] || "";
+        }
 
-        const urlParts = this.wgPatentURI.split("/");
-        const pos = urlParts.findIndex(item => item === "pp-impl") + 1;
-        return urlParts[pos] || "";
-      }
-
-    }); // configuration done - yay!
+      });
+    } else {
+      conf.wgId = conf.wgId ? conf.wgId : "";
+    } // configuration done - yay!
     // insert into document
+
 
     const header = (conf.isCGBG ? _cgbgHeaders.default : _headers.default)(conf);
     document.body.prepend(header);
@@ -257,33 +270,33 @@ define(["exports", "../core/utils", "./templates/cgbg-headers", "./templates/hea
     if (Array.isArray(conf.wg)) {
       conf.multipleWGs = conf.wg.length > 1;
       conf.wgHTML = (0, _utils.joinAnd)(conf.wg, (wg, idx) => {
-        return `the <a href='${conf.wgURI[idx]}'>${wg}</a>`;
+        return "the <a href='".concat(conf.wgURI[idx], "'>").concat(wg, "</a>");
       });
       const pats = [];
 
       for (let i = 0, n = conf.wg.length; i < n; i++) {
-        pats.push(`a <a href='${conf.wgPatentURI[i]}' rel='disclosure'>` + `public list of any patent disclosures  (${conf.wg[i]})</a>`);
+        pats.push("a <a href='".concat(conf.wgPatentURI[i], "' rel='disclosure'>") + "public list of any patent disclosures  (".concat(conf.wg[i], ")</a>"));
       }
 
       conf.wgPatentHTML = (0, _utils.joinAnd)(pats);
     } else {
       conf.multipleWGs = false;
-      conf.wgHTML = `the <a href='${conf.wgURI}'>${conf.wg}</a>`;
+      conf.wgHTML = "the <a href='".concat(conf.wgURI, "'>").concat(conf.wg, "</a>");
     }
 
     if (conf.specStatus === "PR" && !conf.crEnd) {
-      (0, _pubsubhub.pub)("error", `\`specStatus\` is "PR" but no \`crEnd\` is specified (needed to indicate end of previous CR).`);
+      (0, _pubsubhub.pub)("error", "`specStatus` is \"PR\" but no `crEnd` is specified (needed to indicate end of previous CR).");
     }
 
     if (conf.specStatus === "CR" && !conf.crEnd) {
-      (0, _pubsubhub.pub)("error", `\`specStatus\` is "CR", but no \`crEnd\` is specified in Respec config.`);
+      (0, _pubsubhub.pub)("error", "`specStatus` is \"CR\", but no `crEnd` is specified in Respec config.");
     }
 
     conf.crEnd = validateDateAndRecover(conf, "crEnd");
     conf.humanCREnd = CZDate.format(conf.crEnd);
 
     if (conf.specStatus === "PR" && !conf.prEnd) {
-      (0, _pubsubhub.pub)("error", `\`specStatus\` is "PR" but no \`prEnd\` is specified.`);
+      (0, _pubsubhub.pub)("error", "`specStatus` is \"PR\" but no `prEnd` is specified.");
     }
 
     conf.prEnd = validateDateAndRecover(conf, "prEnd");
@@ -295,8 +308,16 @@ define(["exports", "../core/utils", "./templates/cgbg-headers", "./templates/hea
 
     conf.perEnd = validateDateAndRecover(conf, "perEnd");
     conf.humanPEREnd = CZDate.format(conf.perEnd);
-    conf.recNotExpected = conf.recNotExpected ? true : !conf.isRecTrack && conf.maturity == "WD" && conf.specStatus !== "FPWD-NOTE";
-    if (conf.isIGNote && !conf.charterDisclosureURI) (0, _pubsubhub.pub)("error", "IG-NOTEs must link to charter's disclosure section using `charterDisclosureURI`."); //hyperHTML.bind(sotd)`${populateSoTD(conf, sotd)}`;
+    conf.recNotExpected = conf.noRecTrack || conf.recNotExpected ? true : !conf.isRecTrack && conf.maturity == "WD" && conf.specStatus !== "FPWD-NOTE";
+
+    if (conf.noRecTrack && recTrackStatus.includes(conf.specStatus)) {
+      (0, _pubsubhub.pub)("error", "Document configured as [`noRecTrack`](https://github.com/w3c/respec/wiki/noRecTrack), but its status (\"".concat(conf.specStatus, "\") puts it on the W3C Rec Track. Status cannot be any of: ").concat(recTrackStatus.join(", "), ". [More info](https://github.com/w3c/respec/wiki/noRecTrack)."));
+    }
+
+    if (conf.isIGNote && !conf.charterDisclosureURI) {
+      (0, _pubsubhub.pub)("error", "IG-NOTEs must link to charter's disclosure section using `charterDisclosureURI`.");
+    } //hyperHTML.bind(sotd)`${populateSoTD(conf, sotd)}`;
+
 
     if (!conf.implementationReportURI && conf.isCR) {
       (0, _pubsubhub.pub)("error", "CR documents must have an [`implementationReportURI`](https://github.com/w3c/respec/wiki/implementationReportURI) " + "that describes [implementation experience](https://data.gov.cz/2019/Process-20190301/#implementation-experience).");
@@ -310,8 +331,40 @@ define(["exports", "../core/utils", "./templates/cgbg-headers", "./templates/hea
 
     (0, _pubsubhub.pub)("amend-user-config", {
       publishISODate: conf.publishISODate,
-      generatedSubtitle: `${conf.longStatus} ${conf.publishHumanDate}`
+      generatedSubtitle: "".concat(conf.longStatus, " ").concat(conf.publishHumanDate)
     });
+  }
+  /**
+   * @param {string} orcid Either an ORCID URL or just the 16-digit ID which comes after the /
+   * @return {string} the full ORCID URL. Throws an error if the ID is invalid.
+   */
+
+
+  function normalizeOrcid(orcid) {
+    const orcidUrl = new URL(orcid, "https://orcid.org/");
+
+    if (orcidUrl.origin !== "https://orcid.org") {
+      throw new Error("The origin should be \"https://orcid.org\", not \"".concat(orcidUrl.origin, "\"."));
+    } // trailing slash would mess up checksum
+
+
+    const orcidId = orcidUrl.pathname.slice(1).replace(/\/$/, "");
+
+    if (!/^\d{4}-\d{4}-\d{4}-\d{3}(\d|X)$/.test(orcidId)) {
+      throw new Error("ORCIDs have the format \"1234-1234-1234-1234\", not \"".concat(orcidId, "\""));
+    } // calculate checksum as per https://support.orcid.org/hc/en-us/articles/360006897674-Structure-of-the-ORCID-Identifier
+
+
+    const lastDigit = orcidId[orcidId.length - 1];
+    const remainder = orcidId.split("").slice(0, -1).filter(c => /\d/.test(c)).map(Number).reduce((acc, c) => (acc + c) * 2, 0);
+    const lastDigitInt = (12 - remainder % 11) % 11;
+    const lastDigitShould = lastDigitInt === 10 ? "X" : String(lastDigitInt);
+
+    if (lastDigit !== lastDigitShould) {
+      throw new Error("\"".concat(orcidId, "\" has an invalid checksum."));
+    }
+
+    return orcidUrl.href;
   }
   /**
    * @param {Node} node

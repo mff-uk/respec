@@ -5,8 +5,8 @@
 //  - specStatus: the short code for the specification's maturity level or type (required)
 
 import { createResourceHint, linkCSS, toKeyValuePairs } from "../core/utils";
-import { pub, sub } from "../core/pubsubhub";
-export const name = "odcz/style";
+import { pub, sub } from "../core/pubsubhub.js";
+export const name = "odcz/style.js";
 function attachFixupScript(doc, version) {
   const script = doc.createElement("script");
   if (location.hash) {

@@ -7,22 +7,19 @@ window.addEventListener("error", ev => {
 // this is only set in a build, not at all in the dev environment
 require.config({
   paths: {
-    clipboard: "deps/clipboard",
     hyperhtml: "deps/hyperhtml",
     idb: "deps/idb",
-    jquery: "deps/jquery",
     marked: "deps/marked",
     pluralize: "deps/pluralize",
     text: "deps/text",
     webidl2: "deps/webidl2",
-    //"deps/highlight": "https://data.gov.cz/otevřené-formální-normy/static/js/respec-highlight",
   },
   shim: {
     shortcut: {
       exports: "shortcut",
     },
-    highlight: {
-      exports: "hljs",
+    idb: {
+      exports: "idb",
     },
   },
 });
@@ -50,6 +47,7 @@ define(
 //  "./w3c/abstract",
 //  "./w3c/conformance",
   "./core/data-transform",
+  "./core/data-abbr",
 //  "./core/inlines",
   "./odcz/inlines",
   "./core/dfn",
@@ -68,10 +66,10 @@ define(
   "./core/contrib",
   "./core/fix-headers",
   "./core/structure",
-  "./odcz/informative",
-//  "./w3c/informative",
+  "./core/informative",
   "./core/id-headers",
   "./core/caniuse",
+  "./core/mdn-annotation",
   "./ui/save-html",
   "./ui/search-specref",
   "./ui/dfn-list",
@@ -84,15 +82,23 @@ define(
   "./core/data-tests",
   "./core/list-sorter",
   "./core/highlight-vars",
+  "./core/data-type",
   "./core/algorithms",
+  "./core/anchor-expander",  
   /*Linter must be the last thing to run*/
   "./core/linter",
-  ], (runner, { ui }, ...plugins) => {
+], (runner, { ui }, ...plugins) => {
   ui.show();
-  domReady().then(async () => {
+  const loadPromise = new Promise(r => {
+    if (document.readyState !== "loading") {
+      r();
+      return;
+    }
+    document.addEventListener("DOMContentLoaded", r)
+  });
+  loadPromise.then(async () => {
     try {
       await runner.runAll(plugins);
-      await document.respecIsReady;
     } catch (err) {
       console.error(err);
     } finally {
@@ -100,11 +106,3 @@ define(
     }
   });
 });
-
-async function domReady() {
-  if (document.readyState === "loading") {
-    await new Promise(resolve =>
-      document.addEventListener("DOMContentLoaded", resolve)
-    );
-  }
-}

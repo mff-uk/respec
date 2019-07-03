@@ -12,92 +12,151 @@ define(["exports", "hyperhtml", "./show-link", "./show-logo", "./show-people"], 
 
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+  function _templateObject14() {
+    const data = _taggedTemplateLiteral(["\n            <p>\n              ", "\n              ", "\n            </p>\n          "]);
+
+    _templateObject14 = function _templateObject14() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject13() {
+    const data = _taggedTemplateLiteral(["\n              <dt>\n                ", "\n              </dt>\n              ", "\n            "]);
+
+    _templateObject13 = function _templateObject13() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject12() {
+    const data = _taggedTemplateLiteral(["\n              <dt>\n                ", "\n              </dt>\n              ", "\n            "]);
+
+    _templateObject12 = function _templateObject12() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject11() {
+    const data = _taggedTemplateLiteral(["\n                    <dt>Previous editor's draft:</dt>\n                    <dd><a href=\"", "\">", "</a></dd>\n                  "]);
+
+    _templateObject11 = function _templateObject11() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject10() {
+    const data = _taggedTemplateLiteral(["\n              ", "\n            "]);
+
+    _templateObject10 = function _templateObject10() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject9() {
+    const data = _taggedTemplateLiteral(["\n              <dt>Previous version:</dt>\n              <dd><a href=\"", "\">", "</a></dd>\n            "]);
+
+    _templateObject9 = function _templateObject9() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject8() {
+    const data = _taggedTemplateLiteral(["\n              <dt>", "</dt>\n              <dd>", "</dd>\n            "]);
+
+    _templateObject8 = function _templateObject8() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject7() {
+    const data = _taggedTemplateLiteral(["\n              <dt>Implementation report:</dt>\n              <dd>\n                <a href=\"", "\"\n                  >", "</a\n                >\n              </dd>\n            "]);
+
+    _templateObject7 = function _templateObject7() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject6() {
+    const data = _taggedTemplateLiteral(["\n              <dt>Test suite:</dt>\n              <dd><a href=\"", "\">", "</a></dd>\n            "]);
+
+    _templateObject6 = function _templateObject6() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject5() {
+    const data = _taggedTemplateLiteral(["\n              <dt>", "</dt>\n              <dd><a href=\"", "\">", "</a></dd>\n            "]);
+
+    _templateObject5 = function _templateObject5() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject4() {
+    const data = _taggedTemplateLiteral(["\n              <dt>", "</dt>\n              <dd>\n                <a href=\"", "\">", "</a>\n              </dd>\n            "]);
+
+    _templateObject4 = function _templateObject4() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject3() {
+    const data = _taggedTemplateLiteral(["\n              <dt>", "</dt>\n              <dd>\n                <a class=\"u-url\" href=\"", "\"\n                  >", "</a\n                >\n              </dd>\n            "]);
+
+    _templateObject3 = function _templateObject3() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject2() {
+    const data = _taggedTemplateLiteral(["\n            <h2 id=\"subtitle\">", "</h2>\n          "]);
+
+    _templateObject2 = function _templateObject2() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject() {
+    const data = _taggedTemplateLiteral(["\n    <div class=\"head\">\n      ", "\n      <h1 class=\"title p-name\" id=\"title\">", "</h1>\n      ", "\n      <h2>\n        ", "\n        <time class=\"dt-published\" datetime=\"", "\"\n          >", "</time\n        >\n      </h2>\n      <dl>\n        ", "\n        ", "\n        ", "\n        ", "\n        ", "\n        ", "\n        ", "\n        ", "\n        <dt>", "</dt>\n        ", "\n        ", "\n        ", "\n        ", "\n      </dl>\n      ", "\n      \n      <hr title=\"Separator for header\" />\n    </div>\n  "]);
+
+    _templateObject = function _templateObject() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
   var _default = conf => {
-    const html = _hyperhtml.default;
-    return html`
-    <div class="head">
-      ${conf.logos.map(_showLogo.default)}
-      <h1 class="title p-name" id="title">${conf.title}</h1>
-      ${conf.subtitle ? html`
-            <h2 id="subtitle">${conf.subtitle}</h2>
-          ` : ""}
-      <h2>
-        ${conf.longStatus}
-        <time class="dt-published" datetime="${conf.dashDate}"
-          >${conf.publishHumanDate}</time
-        >
-      </h2>
-      <dl>
-        ${conf.thisVersion ? html`
-              <dt>${conf.l10n.this_version}</dt>
-              <dd>
-                <a class="u-url" href="${conf.thisVersion}"
-                  >${conf.thisVersion}</a
-                >
-              </dd>
-            ` : ""}
-        ${conf.latestVersion ? html`
-              <dt>${conf.l10n.latest_published_version}</dt>
-              <dd>
-                <a href="${conf.latestVersion}">${conf.latestVersion}</a>
-              </dd>
-            ` : ""}
-        ${conf.edDraftURI ? html`
-              <dt>${conf.l10n.latest_editors_draft}</dt>
-              <dd><a href="${conf.edDraftURI}">${conf.edDraftURI}</a></dd>
-            ` : ""}
-        ${conf.testSuiteURI ? html`
-              <dt>Test suite:</dt>
-              <dd><a href="${conf.testSuiteURI}">${conf.testSuiteURI}</a></dd>
-            ` : ""}
-        ${conf.implementationReportURI ? html`
-              <dt>Implementation report:</dt>
-              <dd>
-                <a href="${conf.implementationReportURI}"
-                  >${conf.implementationReportURI}</a
-                >
-              </dd>
-            ` : ""}
-        ${conf.bugTrackerHTML ? html`
-              <dt>${conf.l10n.bug_tracker}</dt>
-              <dd>${[conf.bugTrackerHTML]}</dd>
-            ` : ""}
-        ${conf.prevVersion ? html`
-              <dt>Previous version:</dt>
-              <dd><a href="${conf.prevVersion}">${conf.prevVersion}</a></dd>
-            ` : ""}
-        ${!conf.isCGFinal ? html`
-              ${conf.prevED ? html`
-                    <dt>Previous editor's draft:</dt>
-                    <dd><a href="${conf.prevED}">${conf.prevED}</a></dd>
-                  ` : ""}
-            ` : ""}
-        <dt>${conf.multipleEditors ? conf.l10n.editors : conf.l10n.editor}</dt>
-        ${(0, _showPeople.default)(conf, "Editor", conf.editors)}
-        ${Array.isArray(conf.formerEditors) && conf.formerEditors.length > 0 ? html`
-              <dt>
-                ${conf.multipleFormerEditors ? conf.l10n.former_editors : conf.l10n.former_editor}
-              </dt>
-              ${(0, _showPeople.default)(conf, "Editor", conf.formerEditors)}
-            ` : ""}
-        ${conf.authors ? html`
-              <dt>
-                ${conf.multipleAuthors ? conf.l10n.authors : conf.l10n.author}
-              </dt>
-              ${(0, _showPeople.default)(conf, "Author", conf.authors)}
-            ` : ""}
-        ${conf.otherLinks ? conf.otherLinks.map(_showLink.default) : ""}
-      </dl>
-      ${conf.alternateFormats ? html`
-            <p>
-              ${conf.multipleAlternates ? "This document is also available in these non-normative formats:" : "This document is also available in this non-normative format:"}
-              ${[conf.alternatesHTML]}
-            </p>
-          ` : ""}
-      
-      <hr title="Separator for header" />
-    </div>
-  `;
+    const html = hyperHTML;
+    return html(_templateObject(), conf.logos.map(_showLogo.default), conf.title, conf.subtitle ? html(_templateObject2(), conf.subtitle) : "", conf.longStatus, conf.dashDate, conf.publishHumanDate, conf.thisVersion ? html(_templateObject3(), conf.l10n.this_version, conf.thisVersion, conf.thisVersion) : "", conf.latestVersion ? html(_templateObject4(), conf.l10n.latest_published_version, conf.latestVersion, conf.latestVersion) : "", conf.edDraftURI ? html(_templateObject5(), conf.l10n.latest_editors_draft, conf.edDraftURI, conf.edDraftURI) : "", conf.testSuiteURI ? html(_templateObject6(), conf.testSuiteURI, conf.testSuiteURI) : "", conf.implementationReportURI ? html(_templateObject7(), conf.implementationReportURI, conf.implementationReportURI) : "", conf.bugTrackerHTML ? html(_templateObject8(), conf.l10n.bug_tracker, [conf.bugTrackerHTML]) : "", conf.prevVersion ? html(_templateObject9(), conf.prevVersion, conf.prevVersion) : "", !conf.isCGFinal ? html(_templateObject10(), conf.prevED ? html(_templateObject11(), conf.prevED, conf.prevED) : "") : "", conf.multipleEditors ? conf.l10n.editors : conf.l10n.editor, (0, _showPeople.default)(conf.editors), Array.isArray(conf.formerEditors) && conf.formerEditors.length > 0 ? html(_templateObject12(), conf.multipleFormerEditors ? conf.l10n.former_editors : conf.l10n.former_editor, (0, _showPeople.default)(conf.formerEditors)) : "", conf.authors ? html(_templateObject13(), conf.multipleAuthors ? conf.l10n.authors : conf.l10n.author, (0, _showPeople.default)(conf.authors)) : "", conf.otherLinks ? conf.otherLinks.map(_showLink.default) : "", conf.alternateFormats ? html(_templateObject14(), conf.multipleAlternates ? "This document is also available in these non-normative formats:" : "This document is also available in this non-normative format:", [conf.alternatesHTML]) : "");
   };
 
   _exports.default = _default;

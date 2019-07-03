@@ -15,7 +15,7 @@ define(["exports", "../core/l10n", "../core/pubsubhub"], function (_exports, _l1
     const abs = document.getElementById("abstract");
 
     if (!abs) {
-      (0, _pubsubhub.pub)("error", `Dokument musí mít element s \`id="abstract"`);
+      (0, _pubsubhub.pub)("error", "Dokument mus\xED m\xEDt element s `id=\"abstract\"");
       return;
     }
 

@@ -12,6 +12,138 @@ define(["exports", "hyperhtml", "../../core/pubsubhub", "./show-link", "./show-l
 
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+  function _templateObject13() {
+    const data = _taggedTemplateLiteral(["\n    <a rel=\"license\" href=\"", "\" class=\"", "\">", "</a>\n  "]);
+
+    _templateObject13 = function _templateObject13() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject12() {
+    const data = _taggedTemplateLiteral(["\n              <dt>\n                ", "\n              </dt>\n              ", "\n            "]);
+
+    _templateObject12 = function _templateObject12() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject11() {
+    const data = _taggedTemplateLiteral(["\n              <dt>\n                ", "\n              </dt>\n              ", "\n            "]);
+
+    _templateObject11 = function _templateObject11() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject10() {
+    const data = _taggedTemplateLiteral(["\n              <dt>Posledn\xED doporu\u010Den\xED:</dt>\n              <dd><a href=\"", "\">", "</a></dd>\n            "]);
+
+    _templateObject10 = function _templateObject10() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject9() {
+    const data = _taggedTemplateLiteral(["\n              <dt>Minul\xE9 doporu\u010Den\xED:</dt>\n              <dd><a href=\"", "\">", "</a></dd>\n            "]);
+
+    _templateObject9 = function _templateObject9() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject8() {
+    const data = _taggedTemplateLiteral(["\n              <dt>Minul\xE1 verze:</dt>\n              <dd><a href=\"", "\">", "</a></dd>\n            "]);
+
+    _templateObject8 = function _templateObject8() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject7() {
+    const data = _taggedTemplateLiteral(["\n              <dt>Minul\xFD draft:</dt>\n              <dd><a href=\"", "\">", "</a></dd>\n            "]);
+
+    _templateObject7 = function _templateObject7() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject6() {
+    const data = _taggedTemplateLiteral(["\n              <dt>", "</dt>\n              <dd>", "</dd>\n            "]);
+
+    _templateObject6 = function _templateObject6() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject5() {
+    const data = _taggedTemplateLiteral(["\n              <dt>Zpr\xE1va o implementaci:</dt>\n              <dd>\n                <a href=\"", "\"\n                  >", "</a\n                >\n              </dd>\n            "]);
+
+    _templateObject5 = function _templateObject5() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject4() {
+    const data = _taggedTemplateLiteral(["\n              <dt>Sada test\u016F:</dt>\n              <dd><a href=\"", "\">", "</a></dd>\n            "]);
+
+    _templateObject4 = function _templateObject4() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject3() {
+    const data = _taggedTemplateLiteral(["\n                      <a href=\"", "\">", "</a>\n                    "]);
+
+    _templateObject3 = function _templateObject3() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject2() {
+    const data = _taggedTemplateLiteral(["\n              <dt>", "</dt>\n              <dd>\n                <a class=\"u-url\" href=\"", "\"\n                  >", "</a\n                >\n              </dd>\n              <dt>", "</dt>\n              <dd>\n                ", "\n              </dd>\n            "]);
+
+    _templateObject2 = function _templateObject2() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _templateObject() {
+    const data = _taggedTemplateLiteral(["\n    <div class=\"head\">\n      ", " ", "\n      ", "\n      <h2>\n        ", "\n        <time class=\"dt-published\" datetime=\"", "\"\n          >", "</time\n        >\n      </h2>\n      <dl>\n        ", "\n        ", "\n        ", "\n        ", "\n        ", "\n        ", "\n        ", "\n        <dt>", "</dt>\n        ", "\n        ", "\n        ", "\n        ", "\n      </dl>\n      \n      <hr title=\"Separator for header\" />\n    </div>\n  "]);
+
+    _templateObject = function _templateObject() {
+      return data;
+    };
+
+    return data;
+  }
+
+  function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(0); } return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
   const ccLicense = "https://creativecommons.org/licenses/by/3.0/";
   const w3cLicense = "https://www.w3.org/Consortium/Legal/copyright-documents";
   const legalDisclaimer = "https://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer";
@@ -59,82 +191,7 @@ define(["exports", "hyperhtml", "../../core/pubsubhub", "./show-link", "./show-l
   }
 
   var _default = conf => {
-    return _hyperhtml.default`
-    <div class="head">
-      ${conf.logos.map(_showLogo.default)} ${getSpecTitleElem(conf)}
-      ${getSpecSubTitleElem(conf)}
-      <h2>
-        ${conf.textStatus}
-        <time class="dt-published" datetime="${conf.dashDate}"
-          >${conf.publishHumanDate}</time
-        >
-      </h2>
-      <dl>
-        ${!conf.isNoTrack ? _hyperhtml.default`
-              <dt>${conf.l10n.this_version}</dt>
-              <dd>
-                <a class="u-url" href="${conf.thisVersion}"
-                  >${conf.thisVersion}</a
-                >
-              </dd>
-              <dt>${conf.l10n.latest_published_version}</dt>
-              <dd>
-                ${conf.latestVersion ? _hyperhtml.default`
-                      <a href="${conf.latestVersion}">${conf.latestVersion}</a>
-                    ` : "none"}
-              </dd>
-            ` : ""}
-        ${conf.testSuiteURI ? _hyperhtml.default`
-              <dt>Sada testů:</dt>
-              <dd><a href="${conf.testSuiteURI}">${conf.testSuiteURI}</a></dd>
-            ` : ""}
-        ${conf.implementationReportURI ? _hyperhtml.default`
-              <dt>Zpráva o implementaci:</dt>
-              <dd>
-                <a href="${conf.implementationReportURI}"
-                  >${conf.implementationReportURI}</a
-                >
-              </dd>
-            ` : ""}
-        ${conf.bugTrackerHTML ? _hyperhtml.default`
-              <dt>${conf.l10n.bug_tracker}</dt>
-              <dd>${[conf.bugTrackerHTML]}</dd>
-            ` : ""}
-        ${conf.isED && conf.prevED ? _hyperhtml.default`
-              <dt>Minulý draft:</dt>
-              <dd><a href="${conf.prevED}">${conf.prevED}</a></dd>
-            ` : ""}
-        ${conf.showPreviousVersion ? _hyperhtml.default`
-              <dt>Minulá verze:</dt>
-              <dd><a href="${conf.prevVersion}">${conf.prevVersion}</a></dd>
-            ` : ""}
-        ${!conf.prevRecURI ? "" : conf.isRec ? _hyperhtml.default`
-              <dt>Minulé doporučení:</dt>
-              <dd><a href="${conf.prevRecURI}">${conf.prevRecURI}</a></dd>
-            ` : _hyperhtml.default`
-              <dt>Poslední doporučení:</dt>
-              <dd><a href="${conf.prevRecURI}">${conf.prevRecURI}</a></dd>
-            `}
-        <dt>${conf.multipleEditors ? conf.l10n.editors : conf.l10n.editor}</dt>
-        ${(0, _showPeople.default)(conf, "Editor", conf.editors)}
-        ${Array.isArray(conf.formerEditors) && conf.formerEditors.length > 0 ? _hyperhtml.default`
-              <dt>
-                ${conf.multipleFormerEditors ? conf.l10n.former_editors : conf.l10n.former_editor}
-              </dt>
-              ${(0, _showPeople.default)(conf, "Editor", conf.formerEditors)}
-            ` : ""}
-        ${conf.authors ? _hyperhtml.default`
-              <dt>
-                ${conf.multipleAuthors ? conf.l10n.authors : conf.l10n.author}
-              </dt>
-              ${(0, _showPeople.default)(conf, "Author", conf.authors)}
-            ` : ""}
-        ${conf.otherLinks ? conf.otherLinks.map(_showLink.default) : ""}
-      </dl>
-      
-      <hr title="Separator for header" />
-    </div>
-  `;
+    return (0, _hyperhtml.default)(_templateObject(), conf.logos.map(_showLogo.default), getSpecTitleElem(conf), getSpecSubTitleElem(conf), conf.textStatus, conf.dashDate, conf.publishHumanDate, !conf.isNoTrack ? (0, _hyperhtml.default)(_templateObject2(), conf.l10n.this_version, conf.thisVersion, conf.thisVersion, conf.l10n.latest_published_version, conf.latestVersion ? (0, _hyperhtml.default)(_templateObject3(), conf.latestVersion, conf.latestVersion) : "none") : "", conf.testSuiteURI ? (0, _hyperhtml.default)(_templateObject4(), conf.testSuiteURI, conf.testSuiteURI) : "", conf.implementationReportURI ? (0, _hyperhtml.default)(_templateObject5(), conf.implementationReportURI, conf.implementationReportURI) : "", conf.bugTrackerHTML ? (0, _hyperhtml.default)(_templateObject6(), conf.l10n.bug_tracker, [conf.bugTrackerHTML]) : "", conf.isED && conf.prevED ? (0, _hyperhtml.default)(_templateObject7(), conf.prevED, conf.prevED) : "", conf.showPreviousVersion ? (0, _hyperhtml.default)(_templateObject8(), conf.prevVersion, conf.prevVersion) : "", !conf.prevRecURI ? "" : conf.isRec ? (0, _hyperhtml.default)(_templateObject9(), conf.prevRecURI, conf.prevRecURI) : (0, _hyperhtml.default)(_templateObject10(), conf.prevRecURI, conf.prevRecURI), conf.multipleEditors ? conf.l10n.editors : conf.l10n.editor, (0, _showPeople.default)(conf.editors), Array.isArray(conf.formerEditors) && conf.formerEditors.length > 0 ? (0, _hyperhtml.default)(_templateObject11(), conf.multipleFormerEditors ? conf.l10n.former_editors : conf.l10n.former_editor, (0, _showPeople.default)(conf.formerEditors)) : "", conf.authors ? (0, _hyperhtml.default)(_templateObject12(), conf.multipleAuthors ? conf.l10n.authors : conf.l10n.author, (0, _showPeople.default)(conf.authors)) : "", conf.otherLinks ? conf.otherLinks.map(_showLink.default) : "");
   };
   /**
    * @param {string} text
@@ -146,9 +203,7 @@ define(["exports", "hyperhtml", "../../core/pubsubhub", "./show-link", "./show-l
   _exports.default = _default;
 
   function linkLicense(text, url, cssClass) {
-    return _hyperhtml.default`
-    <a rel="license" href="${url}" class="${cssClass}">${text}</a>
-  `;
+    return (0, _hyperhtml.default)(_templateObject13(), url, cssClass, text);
   }
 
   function linkDocumentUse(conf) {

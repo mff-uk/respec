@@ -2,10 +2,10 @@
  * Sets the defaults for W3C specs
  */
 export const name = "odcz/defaults";
-import { coreDefaults } from "../core/defaults";
-import { definitionMap } from "../core/dfn-map";
-import linter from "../core/linter";
-import { rule as privsecSectionRule } from "../w3c/linter-rules/privsec-section";
+import { coreDefaults } from "../core/defaults.js";
+import { definitionMap } from "../core/dfn-map.js";
+import linter from "../core/linter.js";
+import { rule as privsecSectionRule } from "../w3c/linter-rules/privsec-section.js";
 
 linter.register(privsecSectionRule);
 const licenses = new Map([
@@ -56,6 +56,7 @@ const odczDefaults = {
     }
   ],
   addSectionLinks: true,
+  xref: true,
 };
 
 export function run(conf) {

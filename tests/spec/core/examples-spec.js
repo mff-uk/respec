@@ -1,17 +1,25 @@
 "use strict";
+
+import {
+  flushIframes,
+  makeBasicConfig,
+  makeRSDoc,
+  makeStandardOps,
+} from "../SpecHelper.js";
+
 describe("Core — Examples", () => {
   afterAll(flushIframes);
   it("processes examples", async () => {
-    const ops = {
-      config: makeBasicConfig(),
-      body: `${makeDefaultBody()}<section>
-          <pre class='example' title='EX'>\n  {\n    CONTENT\n  }\n  </pre>
-        </section>`,
-    };
+    const body = `
+      <section>
+        <pre class='example' title='EX'>\n  {\n    CONTENT\n  }\n  </pre>
+      </section>
+    `;
+    const ops = makeStandardOps(null, body);
     const doc = await makeRSDoc(ops);
     const example = doc.querySelector("div.example pre");
     const div = example.closest("div");
-    expect(div.classList.contains("example")).toBeTruthy();
+    expect(div.classList).toContain("example");
     expect(div.id).toBe("example-1-ex");
 
     const markers = div.querySelectorAll("div.marker");
@@ -25,12 +33,12 @@ describe("Core — Examples", () => {
   });
 
   it("processes aside examples", async () => {
-    const ops = {
-      config: makeBasicConfig(),
-      body: `${makeDefaultBody()}<article>
-           <aside class='example' title='EX'>\n{\n  CONTENT\n}\n  </aside>
-         </article>`,
-    };
+    const body = `
+      <article>
+        <aside class='example' title='EX'>\n{\n  CONTENT\n}\n  </aside>
+      </article>
+    `;
+    const ops = makeStandardOps(null, body);
     const doc = await makeRSDoc(ops);
     const example = doc.querySelector("aside.example");
     expect(example.id).toBe("example-1-ex");
@@ -47,21 +55,20 @@ describe("Core — Examples", () => {
     );
   });
   it("processes children of aside examples", async () => {
-    const ops = {
-      config: makeBasicConfig(),
-      body: `${makeDefaultBody()}
-           <aside class="example">
-            <pre class="js">
-            // Whitespace before this text should be removed
-            </pre>
-            <pre>
-                  // this one should also have its whitespace removed
-            </pre>
-            <pre>
-                                this one should also have its whitespace removed
-            </pre>
-           </aside>`,
-    };
+    const body = `
+      <aside class="example">
+      <pre class="js">
+      // Whitespace before this text should be removed
+      </pre>
+      <pre>
+            // this one should also have its whitespace removed
+      </pre>
+      <pre>
+                          this one should also have its whitespace removed
+      </pre>
+      </aside>
+    `;
+    const ops = makeStandardOps(null, body);
     const doc = await makeRSDoc(ops);
     const example = doc.querySelectorAll("code.hljs");
     expect(example.length).toBe(3);
@@ -127,9 +134,9 @@ describe("Core — Examples", () => {
     const doc = await makeRSDoc(ops);
     const exampleLink = doc.querySelector("aside.example a.self-link");
     const example = doc.querySelector("aside.example");
-    expect(
-      exampleLink.getAttribute("href").includes("this-is-a-very-long-link")
-    ).toEqual(false);
+    expect(exampleLink.getAttribute("href")).not.toContain(
+      "this-is-a-very-long-link"
+    );
     expect(exampleLink.getAttribute("href")).toBe("#example-1");
     expect(example.id).toBe("example-1");
   });
@@ -147,20 +154,36 @@ describe("Core — Examples", () => {
     const mybutton = doc.getElementById("mybutton");
     expect(mybutton.onclick).toBeTruthy();
   });
-});
-
-it("localizes examples", async () => {
-  const ops = {
-    config: makeBasicConfig(),
-    htmlAttrs: {
-      lang: "nl",
-    },
-    body: `<section>
-        <pre class="example"> This is an example </pre>
-      </section>`,
-  };
-  const doc = await makeRSDoc(ops);
-  const { textContent } = doc.querySelector(".example");
-  expect(doc.documentElement.lang).toBe("nl");
-  expect(textContent).toContain("Voorbeeld");
+  it("localizes examples", async () => {
+    const ops = {
+      config: makeBasicConfig(),
+      htmlAttrs: {
+        lang: "nl",
+      },
+      body: `<section>
+          <pre class="example"> This is an example </pre>
+        </section>`,
+    };
+    const doc = await makeRSDoc(ops);
+    const { textContent } = doc.querySelector(".example");
+    expect(doc.documentElement.lang).toBe("nl");
+    expect(textContent).toContain("Voorbeeld");
+  });
+  it("substitutes empty inline links to examples", async () => {
+    const body = `
+      <p id="links">
+        <a href="#example1"></a>
+        <a href="#example2"></a>
+      </p>
+      <aside class="example" id="example1" title="one">
+      </aside>
+      <pre class="example" id="example2" title="two">
+      </pre>
+    `;
+    const ops = makeStandardOps({}, body);
+    const doc = await makeRSDoc(ops);
+    const [example1, example2] = doc.querySelectorAll("#links a");
+    expect(example1.textContent.trim()).toBe("Example 1");
+    expect(example2.textContent.trim()).toBe("Example 2");
+  });
 });

@@ -4,8 +4,8 @@
  *
  * Core linter module. Exports a linter object.
  */
-import { pub } from "./pubsubhub";
-import { showInlineWarning } from "./utils";
+import { pub } from "./pubsubhub.js";
+import { showInlineWarning } from "./utils.js";
 export const name = "core/linter";
 
 /** @type {WeakMap<Linter, { rules: Set<import("./LinterRule").default> }>} */
@@ -24,7 +24,7 @@ class Linter {
    * @param  {...import("./LinterRule").default} newRules
    */
   register(...newRules) {
-    newRules.reduce((rules, newRule) => rules.add(newRule), this.rules);
+    newRules.forEach(newRule => this.rules.add(newRule));
   }
   async lint(conf, doc = window.document) {
     const promisesToLint = [...privates.get(this).rules].map(rule =>

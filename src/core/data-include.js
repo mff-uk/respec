@@ -1,4 +1,3 @@
-/* globals console */
 // Module core/data-include
 // Support for the data-include attribute. Causes external content to be included inside an
 // element that has data-include='some URI'. There is also a data-oninclude attribute that
@@ -9,8 +8,8 @@
 //  This module only really works when you are in an HTTP context, and will most likely
 //  fail if you are editing your documents on your local drive. That is due to security
 //  restrictions in the browser.
-import { pub } from "./pubsubhub";
-import { runTransforms } from "./utils";
+import { pub } from "./pubsubhub.js";
+import { runTransforms } from "./utils.js";
 
 export const name = "core/data-include";
 
@@ -24,7 +23,7 @@ function processResponse(rawData, id, url) {
     case "text":
       if (replace) {
         replacementNode = doc.createTextNode(data);
-        el.parentNode.replaceChild(replacementNode, el);
+        el.replaceWith(replacementNode);
       } else {
         el.textContent = data;
       }
@@ -37,7 +36,7 @@ function processResponse(rawData, id, url) {
         while (el.hasChildNodes()) {
           replacementNode.append(el.removeChild(el.firstChild));
         }
-        el.parentNode.replaceChild(replacementNode, el);
+        el.replaceWith(replacementNode);
       }
   }
   // If still in the dom tree, clean up
@@ -75,9 +74,7 @@ export async function run() {
       const text = await response.text();
       processResponse(text, id, url);
     } catch (err) {
-      const msg = `\`data-include\` failed: \`${url}\` (${
-        err.message
-      }). See console for details.`;
+      const msg = `\`data-include\` failed: \`${url}\` (${err.message}). See console for details.`;
       console.error("data-include failed for element: ", el, err);
       pub("error", msg);
     }

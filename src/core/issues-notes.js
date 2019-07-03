@@ -1,3 +1,4 @@
+// @ts-check
 // Module core/issues-notes
 // Manages issues and notes, including marking them up, numbering, inserting the title,
 // and injecting the style sheet.
@@ -10,26 +11,35 @@
 // numbered to avoid involuntary clashes.
 // If the configuration has issueBase set to a non-empty string, and issues are
 // manually numbered, a link to the issue is created using issueBase and the issue number
-import { addId, fetchAndCache, joinAnd, parents } from "./utils";
+import { addId, joinAnd, parents } from "./utils.js";
 import css from "text!../../assets/issues-notes.css";
-import { lang as defaultLang } from "../core/l10n";
+import { lang as defaultLang } from "../core/l10n.js";
+import { fetchAndStoreGithubIssues } from "./github-api.js";
 import hyperHTML from "hyperhtml";
-import { pub } from "./pubsubhub";
+import { pub } from "./pubsubhub.js";
+
+/**
+ * @typedef {import("./github-api").GitHubIssue} GitHubIssue
+ * @typedef {import("./github-api").GitHubLabel} GitHubLabel
+ */
 
 export const name = "core/issues-notes";
 
 const localizationStrings = {
   en: {
     issue_summary: "Issue Summary",
+    no_issues_in_spec: "There are no issues listed in this specification.",
   },
   cs: {
     issue_summary: "Shrnutí issues",
   },
   nl: {
     issue_summary: "Lijst met issues",
+    no_issues_in_spec: "Er zijn geen problemen vermeld in deze specificatie.",
   },
   es: {
     issue_summary: "Resumen de la cuestión",
+    no_issues_in_spec: "No hay problemas enumerados en esta especificación.",
   },
 };
 
@@ -37,10 +47,12 @@ const lang = defaultLang in localizationStrings ? defaultLang : "en";
 
 const l10n = localizationStrings[lang];
 
-const MAX_GITHUB_REQUESTS = 60;
-
 /**
- * @typedef {{ type: string, inline: boolean, number: number, title: string }} Report
+ * @typedef {object} Report
+ * @property {string} type
+ * @property {boolean} inline
+ * @property {number} number
+ * @property {string} title
  *
  * @param {NodeListOf<HTMLElement>} ins
  * @param {Map<number, GitHubIssue>} ghIssues
@@ -50,8 +62,6 @@ function handleIssues(ins, ghIssues, conf) {
   const hasDataNum = !!document.querySelector(".issue[data-number]");
   let issueNum = 0;
   const issueList = document.createElement("ul");
-  const issueSummary = hyperHTML`
-    <div><h2>${l10n.issue_summary}</h2>${issueList}</div>`;
   ins.forEach(inno => {
     const { type, displayType, isFeatureAtRisk } = getIssueType(inno, conf);
     const isIssue = type === "issue";
@@ -124,6 +134,7 @@ function handleIssues(ins, ghIssues, conf) {
         }
         titleParent.append(createLabelsGroup(labels, report.title, repoURL));
       }
+      /** @type {HTMLElement | DocumentFragment} */
       let body = inno;
       inno.replaceWith(div);
       body.classList.remove(type);
@@ -139,19 +150,14 @@ function handleIssues(ins, ghIssues, conf) {
     }
     pub(report.type, report);
   });
-  const issueSummaryElement = document.getElementById("issue-summary");
-  if (issueSummaryElement) {
-    if (document.querySelectorAll(".issue").length) {
-      issueSummaryElement.append(...issueSummary.childNodes);
-    } else {
-      pub("warn", "Using issue summary (#issue-summary) but no issues found.");
-      issueSummaryElement.remove();
-    }
-  }
+  makeIssueSectionSummary(issueList);
 }
 
 /**
- * @typedef {{ type: string, displayType: string, isFeatureAtRisk: boolean }} IssueType
+ * @typedef {object} IssueType
+ * @property {string} type
+ * @property {string} displayType
+ * @property {boolean} isFeatureAtRisk
  *
  * @param {HTMLElement} inno
  * @return {IssueType}
@@ -181,7 +187,7 @@ function getIssueType(inno, conf) {
 }
 
 /**
- * @param {number} dataNum
+ * @param {string} dataNum
  * @param {*} conf
  */
 function linkToIssueTracker(dataNum, conf, { isFeatureAtRisk = false } = {}) {
@@ -207,44 +213,27 @@ function createIssueSummaryEntry(l10nIssue, report, id) {
   `;
 }
 
-async function fetchAndStoreGithubIssues(conf) {
-  const { githubAPI, githubUser, githubToken } = conf;
-  /** @type {NodeListOf<HTMLElement>} */
-  const specIssues = document.querySelectorAll(".issue[data-number]");
-  if (specIssues.length > MAX_GITHUB_REQUESTS) {
-    const msg =
-      `Your spec contains ${specIssues.length} Github issues, ` +
-      `but GitHub only allows ${MAX_GITHUB_REQUESTS} requests. Some issues might not show up.`;
-    pub("warning", msg);
+/**
+ *
+ * @param {HTMLUListElement} issueList
+ */
+function makeIssueSectionSummary(issueList) {
+  const issueSummaryElement = document.getElementById("issue-summary");
+  if (!issueSummaryElement) return;
+  const heading = issueSummaryElement.querySelector("h2, h3, h4, h5, h6");
+
+  issueList.hasChildNodes()
+    ? issueSummaryElement.append(issueList)
+    : issueSummaryElement.append(hyperHTML`<p>${l10n.no_issues_in_spec}</p>`);
+  if (
+    !heading ||
+    (heading && heading !== issueSummaryElement.firstElementChild)
+  ) {
+    issueSummaryElement.insertAdjacentHTML(
+      "afterbegin",
+      `<h2>${l10n.issue_summary}</h2>`
+    );
   }
-  const issuePromises = [...specIssues]
-    .map(elem => Number.parseInt(elem.dataset.number, 10))
-    .filter(issueNumber => issueNumber)
-    .map(async issueNumber => {
-      const issueURL = `${githubAPI}/issues/${issueNumber}`;
-      const headers = {
-        // Get back HTML content instead of markdown
-        // See: https://developer.github.com/v3/media/
-        Accept: "application/vnd.github.v3.html+json",
-      };
-      if (githubUser && githubToken) {
-        const credentials = btoa(`${githubUser}:${githubToken}`);
-        const Authorization = `Basic ${credentials}`;
-        Object.assign(headers, { Authorization });
-      } else if (githubToken) {
-        const Authorization = `token ${githubToken}`;
-        Object.assign(headers, { Authorization });
-      }
-      const request = new Request(issueURL, {
-        mode: "cors",
-        referrerPolicy: "no-referrer",
-        headers,
-      });
-      const response = await fetchAndCache(request);
-      return processResponse(response, issueNumber);
-    });
-  const issues = await Promise.all(issuePromises);
-  return new Map(issues);
 }
 
 function isLight(rgb) {
@@ -292,31 +281,6 @@ function createLabel(label, repoURL) {
     class="${cssClasses}"
     style="${style}"
     href="${issuesURL.href}">${name}</a>`;
-}
-
-/**
- * @typedef {{ color: string, name: string }} GitHubLabel
- * @typedef {{ title: string, number: number, state: string, message: string, body_html: string, labels: GitHubLabel[] }} GitHubIssue
- *
- * @param {Response} response
- * @param {number} issueNumber
- */
-async function processResponse(response, issueNumber) {
-  // "message" is always error message from GitHub
-  const issue = { title: "", number: issueNumber, state: "", message: "" };
-  try {
-    const json = await response.json();
-    Object.assign(issue, json);
-  } catch (err) {
-    issue.message = `Error JSON parsing issue #${issueNumber} from GitHub.`;
-  }
-  if (!response.ok || issue.message) {
-    const msg = `Error fetching issue #${issueNumber} from GitHub. ${
-      issue.message
-    } (HTTP Status ${response.status}).`;
-    pub("error", msg);
-  }
-  return /** @type {[number, GitHubIssue]} */ ([issueNumber, issue]);
 }
 
 export async function run(conf) {

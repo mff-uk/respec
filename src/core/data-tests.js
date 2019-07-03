@@ -9,10 +9,10 @@
  *
  * Docs: https://github.com/w3c/respec/wiki/data-tests
  */
-import { lang as defaultLang } from "./l10n";
+import { lang as defaultLang } from "./l10n.js";
 import hyperHTML from "hyperhtml";
-import { pub } from "./pubsubhub";
-import { showInlineWarning } from "./utils";
+import { pub } from "./pubsubhub.js";
+import { showInlineWarning } from "./utils.js";
 const l10n = {
   en: {
     missing_test_suite_uri:
@@ -36,7 +36,7 @@ function toListItem(href) {
   const isSecureTest = testParts.find(part => part === "https");
   if (isSecureTest) {
     const requiresConnectionEmoji = document.createElement("span");
-    requiresConnectionEmoji.innerHTML = "🔒";
+    requiresConnectionEmoji.textContent = "🔒";
     requiresConnectionEmoji.setAttribute(
       "aria-label",
       "requires a secure connection"
@@ -53,7 +53,7 @@ function toListItem(href) {
     .find(part => part === "manual");
   if (isManualTest) {
     const manualPerformEmoji = document.createElement("span");
-    manualPerformEmoji.innerHTML = "💪";
+    manualPerformEmoji.textContent = "💪";
     manualPerformEmoji.setAttribute(
       "aria-label",
       "the test must be run manually"
@@ -94,7 +94,7 @@ export function run(conf) {
           let href = "";
           try {
             href = new URL(url, conf.testSuiteURI).href;
-          } catch (err) {
+          } catch {
             pub("warn", `${l10n[lang].bad_uri}: ${url}`);
           }
           return href;

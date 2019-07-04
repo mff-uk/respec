@@ -98,7 +98,7 @@ export async function run(conf) {
         href: new URL(`./commits/${branch}`, ghURL.href).href,
       },
       {
-        value: "Pull requests",
+        value: "Pull requesty",
         href: newProps.pullBase,
       },
     ],

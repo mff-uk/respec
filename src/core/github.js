@@ -69,7 +69,7 @@ export async function run(conf) {
     pub("error", msg);
     return;
   }
-  const branch = conf.github.branch || "gh-pages";
+  const branch = conf.github.branch || "master";
   const issueBase = new URL("./issues/", ghURL).href;
   const newProps = {
     edDraftURI: `https://${org.toLowerCase()}.github.io/${repo}/`,

@@ -24,6 +24,11 @@ const localizationStrings = {
     file_a_bug: "Nota un bug",
     participate: "Participe",
   },
+  cs: {
+    commit_history: "Historie změn",
+    file_a_bug: "Nahlaste bug",
+    participate: "Zúčastněte se",
+  },
 };
 const lang = defaultLang in localizationStrings ? defaultLang : "en";
 const l10n = localizationStrings[lang];

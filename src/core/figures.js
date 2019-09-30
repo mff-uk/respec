@@ -25,6 +25,7 @@ const localizationStrings = {
   },
   cs: {
     table_of_fig: "Tabulka obrázků",
+    fig: "Obrázek ",
   },
   nl: {
     fig: "Figuur ",

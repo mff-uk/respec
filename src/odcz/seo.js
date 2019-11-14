@@ -6,7 +6,7 @@ import { pub } from "../core/pubsubhub.js";
 export const name = "odcz/seo";
 export function run(conf) {
   const trLatestUri = conf.shortName
-    ? `https://data.gov.cz/otevřené-formální-normy/${conf.shortName}/`
+    ? `https://ofn.gov.cz/${conf.shortName}/`
     : null;
   switch (conf.canonicalURI) {
     case "edDraft":

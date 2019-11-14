@@ -7,7 +7,7 @@
 // Generate the headers material based on the provided configuration.
 // CONFIGURATION
 //  - specStatus: the short code for the specification's maturity level or type (required)
-//  - shortName: the small name that is used after /otevřené-formální-normy/ in published reports (required)
+//  - shortName: the small name that is used after ofn.gov.cz/ in published reports (required)
 //  - editors: an array of people editing the document (at least one is required). People
 //      are defined using:
 //          - name: the person's name (required)

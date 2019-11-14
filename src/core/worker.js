@@ -14,7 +14,7 @@ import workerScript from "text!../../worker/respec-worker.js";
 // Opportunistically preload syntax highlighter
 const hint = {
   hint: "preload",
-  href: "https://data.gov.cz/otevřené-formální-normy/static/js/respec-highlight.js",
+  href: "https://ofn.gov.cz/static/js/respec-highlight.js",
   as: "script",
 };
 const link = createResourceHint(hint);

@@ -26,7 +26,7 @@ define(["exports", "../core/utils", "../core/pubsubhub"], function (_exports, _u
       });
     }
 
-    script.src = "https://data.gov.cz/otev\u0159en\xE9-form\xE1ln\xED-normy/static/js/fixup.js";
+    script.src = "https://ofn.gov.cz/static/js/fixup.js";
     doc.body.appendChild(script);
   } // Make a best effort to attach meta viewport at the top of the head.
   // Other plugins might subsequently push it down, but at least we start
@@ -50,7 +50,7 @@ define(["exports", "../core/utils", "../core/pubsubhub"], function (_exports, _u
   function createBaseStyle() {
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "https://data.gov.cz/otevřené-formální-normy/static/css/base.css";
+    link.href = "https://ofn.gov.cz/static/css/base.css";
     link.classList.add("removeOnSave");
     return link;
   }
@@ -82,17 +82,17 @@ define(["exports", "../core/utils", "../core/pubsubhub"], function (_exports, _u
     }, {
       hint: "preload",
       // all specs need it, and we attach it on end-all.
-      href: "https://data.gov.cz/otevřené-formální-normy/static/js/fixup.js",
+      href: "https://ofn.gov.cz/static/js/fixup.js",
       as: "script"
     }, {
       hint: "preload",
       // all specs include on base.css.
-      href: "https://data.gov.cz/otevřené-formální-normy/static/css/base.css",
+      href: "https://ofn.gov.cz/static/css/base.css",
       as: "style"
     }, {
       hint: "preload",
       // all specs show the logo.
-      href: "https://data.gov.cz/otevřené-formální-normy/static/images/logo.png",
+      href: "https://ofn.gov.cz/static/images/logo.png",
       as: "image"
     }].map(_utils.createResourceHint).reduce(function (frag, link) {
       frag.appendChild(link);
@@ -139,7 +139,7 @@ define(["exports", "../core/utils", "../core/pubsubhub"], function (_exports, _u
     }
 
     const finalVersionPath = version ? "".concat(version, "/") : "";
-    const finalStyleURL = "https://data.gov.cz/otev\u0159en\xE9-form\xE1ln\xED-normy/static/css/".concat(conf.specStatus, ".css");
+    const finalStyleURL = "https://ofn.gov.cz/static/css/".concat(conf.specStatus, ".css");
     (0, _utils.linkCSS)(document, finalStyleURL); // Make sure the ODCZ stylesheet is the last stylesheet, as required by W3C Pub Rules.
 
     const moveStyle = styleMover(finalStyleURL);

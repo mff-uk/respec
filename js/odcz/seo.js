@@ -13,7 +13,7 @@ define(["exports", "../core/biblio", "../core/pubsubhub"], function (_exports, _
   _exports.name = name;
 
   function run(conf) {
-    const trLatestUri = conf.shortName ? "https://data.gov.cz/otev\u0159en\xE9-form\xE1ln\xED-normy/".concat(conf.shortName, "/") : null;
+    const trLatestUri = conf.shortName ? "https://ofn.gov.cz/".concat(conf.shortName, "/") : null;
 
     switch (conf.canonicalURI) {
       case "edDraft":

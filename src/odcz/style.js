@@ -18,7 +18,7 @@ function attachFixupScript(doc, version) {
       { once: true }
     );
   }
-  script.src = `https://data.gov.cz/otevřené-formální-normy/static/js/fixup.js`;
+  script.src = `https://ofn.gov.cz/static/js/fixup.js`;
   doc.body.appendChild(script);
 }
 
@@ -42,7 +42,7 @@ function createMetaViewport() {
 function createBaseStyle() {
   const link = document.createElement("link");
   link.rel = "stylesheet";
-  link.href = "https://data.gov.cz/otevřené-formální-normy/static/css/base.css";
+  link.href = "https://ofn.gov.cz/static/css/base.css";
   link.classList.add("removeOnSave");
   return link;
 }
@@ -70,17 +70,17 @@ function createResourceHints() {
     },
     {
       hint: "preload", // all specs need it, and we attach it on end-all.
-      href: "https://data.gov.cz/otevřené-formální-normy/static/js/fixup.js",
+      href: "https://ofn.gov.cz/static/js/fixup.js",
       as: "script",
     },
     {
       hint: "preload", // all specs include on base.css.
-      href: "https://data.gov.cz/otevřené-formální-normy/static/css/base.css",
+      href: "https://ofn.gov.cz/static/css/base.css",
       as: "style",
     },
     {
       hint: "preload", // all specs show the logo.
-      href: "https://data.gov.cz/otevřené-formální-normy/static/images/logo.png",
+      href: "https://ofn.gov.cz/static/images/logo.png",
       as: "image",
     }
   ]
@@ -130,7 +130,7 @@ export function run(conf) {
     );
   }
   const finalVersionPath = version ? `${version}/` : "";
-  const finalStyleURL = `https://data.gov.cz/otevřené-formální-normy/static/css/${conf.specStatus}.css`;
+  const finalStyleURL = `https://ofn.gov.cz/static/css/${conf.specStatus}.css`;
 
   linkCSS(document, finalStyleURL);
   // Make sure the ODCZ stylesheet is the last stylesheet, as required by W3C Pub Rules.

@@ -41,14 +41,14 @@ const odczDefaults = {
   specStatus: "base",
   logos: [
 	{
-      src: "https://data.gov.cz/otevřené-formální-normy/static/images/ozp_logo_cz.jpg",
+      src: "https://ofn.gov.cz/static/images/ozp_logo_cz.jpg",
       alt: "Evropská unie - Evropský sociální fond - Operační program Zaměstnanost",
       height: 48,
       width: 231,
 	  url: "https://www.esfcr.cz/"
     },
     {
-      src: "https://data.gov.cz/otevřené-formální-normy/static/images/logo.png",
+      src: "https://ofn.gov.cz/static/images/logo.png",
       alt: "Otevřená data",
       height: 64,
       width: 64,

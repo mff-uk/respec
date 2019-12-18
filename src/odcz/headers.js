@@ -95,7 +95,7 @@
 import { ISODate, concatDate, joinAnd } from "../core/utils.js";
 import cgbgHeadersTmpl from "./templates/cgbg-headers.js";
 import headersTmpl from "./templates/headers.js";
-import html from "hyperhtml";
+import { hyperHTML } from "../core/import-maps.js";
 import { pub } from "../core/pubsubhub.js";
 
 export const name = "odcz/headers";

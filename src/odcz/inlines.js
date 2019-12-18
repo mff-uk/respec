@@ -13,7 +13,7 @@ import {
   showInlineError,
   showInlineWarning,
 } from "../core/utils.js";
-import hyperHTML from "hyperhtml";
+import { hyperHTML } from "../core/import-maps.js";
 import { idlStringToHtml } from "../core/inline-idl-parser.js";
 import { renderInlineCitation } from "../core/render-biblio.js";
 

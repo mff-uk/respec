@@ -1,4 +1,4 @@
-import html from "hyperhtml";
+import { hyperHTML } from "../../core/import-maps.js";
 import showLink from "./show-link.js";
 import showLogo from "./show-logo.js";
 import showPeople from "./show-people.js";

@@ -1,6 +1,6 @@
 // Module odcz/informative
 // Mark specific sections as informative, based on CSS
-import hyperHTML from "hyperhtml";
+import { hyperHTML } from "../core/import-maps.js";
 export const name = "odcz/informative";
 
 export function run() {

@@ -1,4 +1,4 @@
-import html from "hyperhtml";
+import { hyperHTML as html } from "../../core/import-maps.js";
 import { showInlineWarning } from "../../core/utils.js";
 
 export default obj => {

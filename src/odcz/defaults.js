@@ -5,9 +5,11 @@ export const name = "odcz/defaults";
 import { coreDefaults } from "../core/defaults.js";
 import { definitionMap } from "../core/dfn-map.js";
 import linter from "../core/linter.js";
-import { rule as privsecSectionRule } from "../w3c/linter-rules/privsec-section.js";
+import { rule as privsecSectionRule } from "../core/linter-rules/privsec-section.js";
+import { rule as wptTestsExist } from "../core/linter-rules/wpt-tests-exist.js";
 
-linter.register(privsecSectionRule);
+linter.register(privsecSectionRule, wptTestsExist);
+
 const licenses = new Map([
   [
     "cc0",

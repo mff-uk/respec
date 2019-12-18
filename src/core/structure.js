@@ -24,6 +24,9 @@ const localizationStrings = {
   en: {
     toc: "Table of Contents",
   },
+  cs: {
+    toc: "Obsah",
+  },
   nl: {
     toc: "Inhoudsopgave",
   },

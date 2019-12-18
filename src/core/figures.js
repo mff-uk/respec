@@ -6,7 +6,7 @@
 
 import { addId, renameElement, showInlineWarning, wrapInner } from "./utils.js";
 import { lang as defaultLang } from "../core/l10n.js";
-import hyperHTML from "hyperhtml";
+import { hyperHTML } from "./import-maps.js";
 
 export const name = "core/figures";
 
@@ -72,11 +72,10 @@ function collectFigures() {
 
     if (caption) {
       decorateFigure(fig, caption, i);
+      tof.push(getTableOfFiguresListItem(fig.id, caption));
     } else {
       showInlineWarning(fig, "Found a `<figure>` without a `<figcaption>`");
     }
-
-    tof.push(getTableOfFiguresListItem(fig.id, caption));
   });
   return tof;
 }

@@ -5,7 +5,7 @@
 import { addId } from "./utils.js";
 import { biblio } from "./biblio.js";
 import { lang as defaultLang } from "../core/l10n.js";
-import hyperHTML from "hyperhtml";
+import { hyperHTML } from "./import-maps.js";
 import { pub } from "./pubsubhub.js";
 
 export const name = "core/render-biblio";
@@ -163,7 +163,7 @@ function toRefContent(ref) {
 export function renderInlineCitation(ref) {
   const key = ref.replace(/^(!|\?)/, "");
   const href = `#bib-${key.toLowerCase()}`;
-  return hyperHTML`[<cite><a class="bibref" href="${href}">${key}</a></cite>]`;
+  return hyperHTML`[<cite><a class="bibref" href="${href}" data-link-type="biblio">${key}</a></cite>]`;
 }
 
 /**

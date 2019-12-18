@@ -1,6 +1,7 @@
 "use strict";
 
 import * as utils from "../../../src/core/utils.js";
+import { hyperHTML } from "../../../src/core/import-maps.js";
 
 describe("Core - Utils", () => {
   describe("fetchAndCache", () => {
@@ -215,28 +216,6 @@ describe("Core - Utils", () => {
     });
   });
 
-  describe("calculateLeftPad()", () => {
-    it("throws given invalid input", () => {
-      expect(() => utils.calculateLeftPad()).toThrow();
-      expect(() => utils.calculateLeftPad({})).toThrow();
-      expect(() => utils.calculateLeftPad(123)).toThrow();
-      expect(() => utils.calculateLeftPad(null)).toThrow();
-    });
-    it("calculates the smallest left padding of multiline text", () => {
-      expect(utils.calculateLeftPad("")).toBe(0);
-      expect(utils.calculateLeftPad("\n    \n  ")).toBe(2);
-      expect(utils.calculateLeftPad("                         ")).toBe(25);
-      expect(utils.calculateLeftPad(" a                        ")).toBe(1);
-      expect(utils.calculateLeftPad("  \n a                        ")).toBe(1);
-      expect(utils.calculateLeftPad(" \n   a ")).toBe(1);
-      expect(utils.calculateLeftPad("\n    \n      \n    ")).toBe(4);
-      expect(utils.calculateLeftPad("\n    \n      \n  ")).toBe(2);
-      expect(utils.calculateLeftPad("\n   \n      \n  \n    ")).toBe(2);
-      expect(utils.calculateLeftPad("\n\n\n\n\n\n\n\n\n\n")).toBe(0);
-      expect(utils.calculateLeftPad("    \n\n\n\n\n  \n\n\n\n\n   ")).toBe(2);
-    });
-  });
-
   describe("addID()", () => {
     it("removes diacritical marks", () => {
       const elem = document.createElement("h2");
@@ -262,36 +241,11 @@ describe("Core - Utils", () => {
     });
   });
 
-  describe("lead0", () => {
-    it("prepends 0 only when needed", () => {
-      expect(utils.lead0("1")).toBe("01");
-      expect(utils.lead0("01")).toBe("01");
-    });
-  });
-
   describe("concatDate", () => {
     it("formats the date as needed", () => {
       const d = new Date("1977-03-01");
       expect(utils.concatDate(d)).toBe("19770301");
       expect(utils.concatDate(d, "-")).toBe("1977-03-01");
-    });
-  });
-
-  describe("parseSimpleDate", () => {
-    it("parses a simple date", () => {
-      const d = utils.parseSimpleDate("1977-03-01");
-      expect(d.getUTCFullYear()).toBe(1977);
-      expect(d.getUTCMonth()).toBe(2);
-      expect(d.getUTCDate()).toBe(1);
-    });
-  });
-
-  describe("parseLastModified", () => {
-    it("parses a date in lastModified format", () => {
-      const d = utils.parseLastModified("03/15/1977 13:05:42");
-      expect(d.getUTCFullYear()).toBe(1977);
-      expect(d.getUTCMonth()).toBe(2);
-      expect(d.getUTCDate()).toBe(15);
     });
   });
 
@@ -409,7 +363,10 @@ describe("Core - Utils", () => {
   describe("flatten()", () => {
     it("flattens arrays", () => {
       expect(utils.flatten(["pass"], [123, 456])).toEqual(["pass", 123, 456]);
-      const map = new Map([["key-fail", "pass"], ["anotherKey", 123]]);
+      const map = new Map([
+        ["key-fail", "pass"],
+        ["anotherKey", 123],
+      ]);
       expect(utils.flatten([], map)).toEqual([map]);
       const set = new Set(["pass", 123]);
       expect(utils.flatten([], set)).toEqual([set]);
@@ -447,6 +404,42 @@ describe("Core - Utils", () => {
       const input = new Array(10);
       const output = input.reduce(utils.flatten, ["pass"]);
       expect(output).toEqual(["pass"]);
+    });
+  });
+
+  describe("htmlJoinAnd", () => {
+    it("joins with proper commas and 'and'", () => {
+      const div = document.createElement("div");
+      const render = hyperHTML.bind(div);
+
+      render`${utils.htmlJoinAnd([], item => hyperHTML`<a>${item}</a>`)}`;
+      expect(div.textContent).toBe("");
+      expect(div.getElementsByTagName("a").length).toBe(0);
+
+      render`${utils.htmlJoinAnd(["<x>"], item => hyperHTML`<a>${item}</a>`)}`;
+      expect(div.textContent).toBe("<x>");
+      expect(div.getElementsByTagName("a").length).toBe(1);
+
+      render`${utils.htmlJoinAnd(
+        ["<x>", "<x>"],
+        item => hyperHTML`<a>${item}</a>`
+      )}`;
+      expect(div.textContent).toBe("<x> and <x>");
+      expect(div.getElementsByTagName("a").length).toBe(2);
+
+      render`${utils.htmlJoinAnd(
+        ["<x>", "<x>", "<x>"],
+        item => hyperHTML`<a>${item}</a>`
+      )}`;
+      expect(div.textContent).toBe("<x>, <x>, and <x>");
+      expect(div.getElementsByTagName("a").length).toBe(3);
+
+      render`${utils.htmlJoinAnd(
+        ["<x>", "<x>", "<X>", "<x>"],
+        item => hyperHTML`<a>${item}</a>`
+      )}`;
+      expect(div.textContent).toBe("<x>, <x>, <X>, and <x>");
+      expect(div.getElementsByTagName("a").length).toBe(4);
     });
   });
 
@@ -571,9 +564,9 @@ describe("Core - Utils", () => {
         document.body.appendChild(dfn);
 
         const titles = utils.getDfnTitles(dfn, { isDefinition: true });
-        expect(titles[0]).toBe("dfn");
-        expect(titles[1]).toBe("dfn2");
-        expect(titles[2]).toBe("dfn3");
+        expect(titles[0]).toBe("DFN");
+        expect(titles[1]).toBe("DFN2");
+        expect(titles[2]).toBe("DFN3");
 
         dfn.remove();
       });
@@ -585,9 +578,9 @@ describe("Core - Utils", () => {
         document.body.appendChild(dfn);
 
         const titles = utils.getDfnTitles(dfn, { isDefinition: true });
-        expect(titles[0]).toBe("dfn");
-        expect(titles[1]).toBe("dfn2");
-        expect(titles[2]).toBe("dfn3");
+        expect(titles[0]).toBe("DFN");
+        expect(titles[1]).toBe("DFN2");
+        expect(titles[2]).toBe("DFN3");
         expect(titles[3]).toBeUndefined();
 
         dfn.remove();
@@ -600,16 +593,16 @@ describe("Core - Utils", () => {
         document.body.appendChild(dfn);
 
         const titles = utils.getDfnTitles(dfn, { isDefinition: true });
-        expect(titles[0]).toBe("dfn");
-        expect(titles[1]).toBe("dfn2");
-        expect(titles[2]).toBe("dfn3");
-        expect(titles[3]).toBe("text");
+        expect(titles[0]).toBe("DFN");
+        expect(titles[1]).toBe("DFN2");
+        expect(titles[2]).toBe("DFN3");
+        expect(titles[3]).toBe("TEXT");
 
         dfn.removeAttribute("data-lt");
-        expect(utils.getDfnTitles(dfn)[0]).toBe("abbr");
+        expect(utils.getDfnTitles(dfn)[0]).toBe("ABBR");
 
         dfn.querySelector("abbr").removeAttribute("title");
-        expect(utils.getDfnTitles(dfn)[0]).toBe("text");
+        expect(utils.getDfnTitles(dfn)[0]).toBe("TEXT");
 
         dfn.remove();
       });

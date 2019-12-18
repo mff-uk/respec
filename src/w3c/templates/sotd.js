@@ -1,4 +1,5 @@
-import html from "hyperhtml";
+// @ts-check
+import { hyperHTML as html } from "../../core/import-maps.js";
 
 export default (conf, opts) => {
   return html`
@@ -18,14 +19,7 @@ export default (conf, opts) => {
                 ${!conf.sotdAfterWGinfo ? opts.additionalContent : ""}
                 ${!conf.overrideStatus
                   ? html`
-                      <p>
-                        This document was published by ${[conf.wgHTML]} as
-                        ${conf.anOrA} ${conf.longStatus}.
-                        ${conf.notYetRec
-                          ? "This document is intended to become a W3C Recommendation."
-                          : ""}
-                      </p>
-                      ${linkToCommunity(conf, opts)}
+                      ${linkToWorkingGroup(conf)} ${linkToCommunity(conf, opts)}
                       ${conf.isCR || conf.isPER || conf.isPR
                         ? html`
                             <p>
@@ -230,7 +224,7 @@ function renderDeliverer(conf) {
         ? html`
             ${multipleWGs
               ? html`
-                  W3C maintains ${[wgPatentHTML]}
+                  W3C maintains ${wgPatentHTML}
                 `
               : html`
                   W3C maintains a
@@ -326,6 +320,21 @@ function noteForTeamSubmission(conf, opts) {
     <p>
       Please consult the complete
       <a href="https://www.w3.org/TeamSubmission/">list of Team Submissions</a>.
+    </p>
+  `;
+}
+
+function linkToWorkingGroup(conf) {
+  if (!conf.wg) {
+    return;
+  }
+  return html`
+    <p>
+      This document was published by ${conf.wgHTML} as ${conf.anOrA}
+      ${conf.longStatus}.
+      ${conf.notYetRec
+        ? "This document is intended to become a W3C Recommendation."
+        : ""}
     </p>
   `;
 }

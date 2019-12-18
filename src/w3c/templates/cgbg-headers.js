@@ -1,5 +1,5 @@
 // @ts-check
-import html from "hyperhtml";
+import { hyperHTML as html } from "../../core/import-maps.js";
 import showLink from "./show-link.js";
 import showLogo from "./show-logo.js";
 import showPeople from "./show-people.js";
@@ -59,12 +59,6 @@ export default conf => {
                   >${conf.implementationReportURI}</a
                 >
               </dd>
-            `
-          : ""}
-        ${conf.bugTrackerHTML
-          ? html`
-              <dt>${conf.l10n.bug_tracker}</dt>
-              <dd>${[conf.bugTrackerHTML]}</dd>
             `
           : ""}
         ${conf.prevVersion

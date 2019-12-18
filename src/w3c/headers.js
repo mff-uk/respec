@@ -39,9 +39,6 @@
 //          - each logo element must specifiy either src or alt
 //  - testSuiteURI: the URI to the test suite, if any
 //  - implementationReportURI: the URI to the implementation report, if any
-//  - bugTracker: and object with the following details
-//      - open: pointer to the list of open bugs
-//      - new: pointer to where to raise new bugs
 //  - noRecTrack: set to true if this document is not intended to be on the Recommendation track
 //  - edDraftURI: the URI of the Editor's Draft for this document, if any. Required if
 //      specStatus is set to "ED".
@@ -82,19 +79,18 @@
 //          - href: a URL for the value (e.g., "https://foo.com/issues"). Optional.
 //          - class: a string representing CSS classes. Optional.
 //  - license: can be one of the following
-//      - "w3c", currently the default (restrictive) license
 //      - "cc-by", which is experimentally available in some groups (but likely to be phased out).
 //          Note that this is a dual licensing regime.
 //      - "cc0", an extremely permissive license. It is only recommended if you are working on a document that is
 //          intended to be pushed to the WHATWG.
 //      - "w3c-software", a permissive and attributions license (but GPL-compatible).
-//      - "w3c-software-doc", the W3C Software and Document License
+//      - "w3c-software-doc", (default) the W3C Software and Document License
 //            https://www.w3.org/Consortium/Legal/2015/copyright-software-and-document
-import { ISODate, concatDate, joinAnd } from "../core/utils.js";
+import { ISODate, concatDate, htmlJoinAnd } from "../core/utils.js";
 import cgbgHeadersTmpl from "./templates/cgbg-headers.js";
 import cgbgSotdTmpl from "./templates/cgbg-sotd.js";
 import headersTmpl from "./templates/headers.js";
-import hyperHTML from "hyperhtml";
+import { hyperHTML } from "../core/import-maps.js";
 import { pub } from "../core/pubsubhub.js";
 import sotdTmpl from "./templates/sotd.js";
 
@@ -380,8 +376,6 @@ export function run(conf) {
   }
   if (conf.prevRecShortname && !conf.prevRecURI)
     conf.prevRecURI = `https://www.w3.org/TR/${conf.prevRecShortname}`;
-  if (!conf.editors || conf.editors.length === 0)
-    pub("error", "At least one editor is required");
   const peopCheck = function(it) {
     if (!it.name) pub("error", "All authors and editors must have a name.");
     if (it.orcid) {
@@ -395,18 +389,28 @@ export function run(conf) {
       }
     }
   };
+  if (!conf.formerEditors) conf.formerEditors = [];
   if (conf.editors) {
     conf.editors.forEach(peopCheck);
+    // Move any editors with retiredDate to formerEditors.
+    for (let i = 0; i < conf.editors.length; i++) {
+      const editor = conf.editors[i];
+      if ("retiredDate" in editor) {
+        conf.formerEditors.push(editor);
+        conf.editors.splice(i--, 1);
+      }
+    }
   }
-  if (conf.formerEditors) {
+  if (!conf.editors || conf.editors.length === 0)
+    pub("error", "At least one editor is required");
+  if (conf.formerEditors.length) {
     conf.formerEditors.forEach(peopCheck);
   }
   if (conf.authors) {
     conf.authors.forEach(peopCheck);
   }
   conf.multipleEditors = conf.editors && conf.editors.length > 1;
-  conf.multipleFormerEditors =
-    Array.isArray(conf.formerEditors) && conf.formerEditors.length > 1;
+  conf.multipleFormerEditors = conf.formerEditors.length > 1;
   conf.multipleAuthors = conf.authors && conf.authors.length > 1;
   (conf.alternateFormats || []).forEach(it => {
     if (!it.uri || !it.label) {
@@ -417,22 +421,11 @@ export function run(conf) {
     conf.alternateFormats && conf.alternateFormats.length > 1;
   conf.alternatesHTML =
     conf.alternateFormats &&
-    joinAnd(conf.alternateFormats, alt => {
-      let optional =
-        alt.hasOwnProperty("lang") && alt.lang ? ` hreflang='${alt.lang}'` : "";
-      optional +=
-        alt.hasOwnProperty("type") && alt.type ? ` type='${alt.type}'` : "";
-      return `<a rel='alternate' href='${alt.uri}'${optional}>${alt.label}</a>`;
+    htmlJoinAnd(conf.alternateFormats, alt => {
+      const lang = alt.hasOwnProperty("lang") && alt.lang ? alt.lang : null;
+      const type = alt.hasOwnProperty("type") && alt.type ? alt.type : null;
+      return hyperHTML`<a rel='alternate' href='${alt.uri}' hreflang='${lang}' type='${type}'>${alt.label}</a>`;
     });
-  if (conf.bugTracker) {
-    if (conf.bugTracker.new && conf.bugTracker.open) {
-      conf.bugTrackerHTML = `<a href='${conf.bugTracker.new}'>${conf.l10n.file_a_bug}</a> ${conf.l10n.open_parens}<a href='${conf.bugTracker.open}'>${conf.l10n.open_bugs}</a>${conf.l10n.close_parens}`;
-    } else if (conf.bugTracker.open) {
-      conf.bugTrackerHTML = `<a href='${conf.bugTracker.open}'>open bugs</a>`;
-    } else if (conf.bugTracker.new) {
-      conf.bugTrackerHTML = `<a href='${conf.bugTracker.new}'>file a bug</a>`;
-    }
-  }
   if (conf.copyrightStart && conf.copyrightStart == conf.publishYear)
     conf.copyrightStart = "";
   conf.longStatus = status2long[conf.specStatus];
@@ -524,20 +517,21 @@ export function run(conf) {
   }
   if (Array.isArray(conf.wg)) {
     conf.multipleWGs = conf.wg.length > 1;
-    conf.wgHTML = joinAnd(conf.wg, (wg, idx) => {
-      return `the <a href='${conf.wgURI[idx]}'>${wg}</a>`;
+    conf.wgHTML = htmlJoinAnd(conf.wg, (wg, idx) => {
+      return hyperHTML`the <a href='${conf.wgURI[idx]}'>${wg}</a>`;
     });
     const pats = [];
     for (let i = 0, n = conf.wg.length; i < n; i++) {
       pats.push(
-        `a <a href='${conf.wgPatentURI[i]}' rel='disclosure'>` +
-          `public list of any patent disclosures  (${conf.wg[i]})</a>`
+        hyperHTML`a <a href='${conf.wgPatentURI[i]}' rel='disclosure'>public list of any patent disclosures (${conf.wg[i]})</a>`
       );
     }
-    conf.wgPatentHTML = joinAnd(pats);
+    conf.wgPatentHTML = htmlJoinAnd(pats);
   } else {
     conf.multipleWGs = false;
-    conf.wgHTML = `the <a href='${conf.wgURI}'>${conf.wg}</a>`;
+    if (conf.wg) {
+      conf.wgHTML = hyperHTML`the <a href='${conf.wgURI}'>${conf.wg}</a>`;
+    }
   }
   if (conf.specStatus === "PR" && !conf.crEnd) {
     pub(

@@ -8,11 +8,16 @@
     "worker": true
   },
   "extends": ["eslint:recommended", "plugin:prettier/recommended"],
+  // TODO: Remove this when https://github.com/eslint/eslint/issues/11803 gets a fix
+  "parser": "babel-eslint",
   "parserOptions": {
     "sourceType": "module",
     "ecmaVersion": 2019
   },
   "rules": {
+    "import/extensions": ["error", "always", {
+      "ignorePackages": true
+    }],
     "prettier/prettier": ["error", { "endOfLine": "auto" }],
     "dot-notation": "error",
     "eol-last": ["error", "always"],
@@ -49,5 +54,5 @@
     "pickRandomsFromList": true,
     "respecConfig": true
   },
-  "plugins": ["prettier"]
+  "plugins": ["import", "prettier"]
 }

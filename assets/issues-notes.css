@@ -1,4 +1,29 @@
 /* --- ISSUES/NOTES --- */
+:root {
+  --main-text-color: white;
+  --main-text-inverted-color: black;
+  --main-bg-color: white;
+  --note-border-color: #52E052;
+  --note-bg-color: #E9FBE9;
+  --note-marker-color: hsl(120, 70%, 30%);
+  --warning-bg-color: #fbe9e9;
+  --warning-border-color: #f11;
+  --warning-box-shadow-color: black;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--main-text-color: rgb(232, 230, 227);
+		--main-text-inverted-color: white;
+		--main-bg-color: rgb(24, 26, 27);
+		--note-border-color: rgb(27, 151, 27);
+		--note-bg-color: rgb(10, 54, 10);
+		--note-marker-color: rgb(141, 235, 141);
+		--warning-bg-color: rgb(54, 10, 10);
+		--warning-border-color: rgb(201, 0, 0);
+		--warning-box-shadow-color: black;
+	}
+}
 .issue-label {
     text-transform: initial;
 }
@@ -16,10 +41,10 @@ span.warning { padding: .1em .5em .15em; }
 }
 
 .warning {
-    border-color: #f11;
+    border-color: var(--warning-border-color);
     border-width: .2em;
     border-style: solid;
-    background: #fbe9e9;
+    background: var(--warning-bg-color);
 }
 
 .warning-title:before{
@@ -54,11 +79,11 @@ input.task-list-item-checkbox {
 }
 
 .issue a.respec-label-dark {
-  color: #fff;
-  background-color: #000;
+  color: var(--main-text-inverted-color);
+  background-color: var(--main-text-color);
 }
 
 .issue a.respec-label-light {
-  color: #000;
-  background-color: #fff;
+  color: var(--main-text-color);
+  background-color: var(--main-text-inverted-color);
 }

@@ -1,4 +1,23 @@
 /* --- EXAMPLES --- */
+:root {
+  --main-bg-color: white;
+  --example-border-color: #E0CB52;
+  --example-bg-color: #fcfaee;
+  --example-marker-color: #827017;
+
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--main-bg-color: rgb(24, 26, 27);
+		--example-border-color: rgb(151, 133, 27);
+		--example-bg-color: rgba(52, 46, 9, 0.3);
+		--example-marker-color: rgb(235, 219, 141);
+		--example-illegal-color: red;
+		--example-illegal-text-color: black;
+	}
+}
+
 span.example-title {
     text-transform: none;
 }
@@ -8,21 +27,21 @@ aside.example, div.example, div.illegal-example {
     position: relative;
     clear: both;
 }
-div.illegal-example { color: red }
-div.illegal-example p { color: black }
+div.illegal-example { color: var(--example-illegal-color); }
+div.illegal-example p { color: var(--example-illegal-text-color); }
 aside.example, div.example {
     padding: .5em;
     border-left-width: .5em;
     border-left-style: solid;
-    border-color: #e0cb52;
-    background: #fcfaee;
+    border-color: var(--example-border-color);
+    background: var(--example-bg-color);
 }
 
 aside.example div.example {
     border-left-width: .1em;
-    border-color: #999;
-    background: #fff;
+    border-color: var(--example-marker-color);
+    background: var(--main-bg-color);
 }
 aside.example div.example span.example-title {
-    color: #999;
+    color: var(--example-marker-color);
 }

@@ -24,6 +24,12 @@ pre.idl::before {
   line-height: 28px;  
 }
 
+@media (prefers-color-scheme: dark) {
+	pre.idl::before {
+		background: #09466c;		
+	}
+}
+
 .idlID {
   font-weight: bold;
   color: #005a9c;

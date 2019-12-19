@@ -3,6 +3,37 @@
  * Robin Berjon - http://berjon.com/
  *****************************************************************/
 
+:root {
+  --references-bg-color: #eaf3ff;
+  --code-color: #c83500;
+  --fig-no-color: #000;
+  --internalDFN-border-color: #99c;
+  --externalDFN-border-color: #ccc;
+  --offending-element-color: red;
+  --table-simple-border-bottom: #005a9c;
+  --table-simple-th-bg-color: #005a9c;
+  --table-simple-th-color: #fff;
+  --table-simple-th-row-border-color: #ddd;
+  --table-simple-tr-nth-child-bg-color: #f0f6ff;
+  --details-border-color: #cad3e2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--references-bg-color: #eaf3ff;
+		--code-color: rgb(255, 129, 84);
+		--fig-no-color: rgb(232, 230, 227);
+		--internalDFN-border-color: #99c;
+		--offending-element-color: red;
+		--table-simple-border-bottom: #005a9c;
+		--table-simple-th-bg-color: #005a9c;
+		--table-simple-th-color: #fff;
+		--table-simple-th-row-border-color: #ddd;
+		--table-simple-tr-nth-child-bg-color: #f0f6ff;
+		--details-border-color: #cad3e2;
+	}
+}
+
 @keyframes pop {
   0% {
     transform: scale(1, 1);
@@ -38,13 +69,13 @@ dfn {
 
 a.internalDFN {
   color: inherit;
-  border-bottom: 1px solid #99c;
+  border-bottom: 1px solid var(--internalDFN-border-color);
   text-decoration: none;
 }
 
 a.externalDFN {
   color: inherit;
-  border-bottom: 1px dotted #ccc;
+  border-bottom: 1px dotted var(--externalDFN-border-color);
   text-decoration: none;
 }
 
@@ -58,7 +89,7 @@ a.bibref {
 
 .respec-offending-element,
 a[href].respec-offending-element {
-  text-decoration: red wavy underline;
+  text-decoration: var(--offending-element-color) wavy underline;
 }
 @supports not (text-decoration: red wavy underline) {
   .respec-offending-element:not(pre) {
@@ -72,7 +103,7 @@ a[href].respec-offending-element {
 }
 
 #references :target {
-  background: #eaf3ff;
+  background: var(--references-bg-color);
   animation: pop 0.4s ease-in-out 0s 1;
 }
 
@@ -81,7 +112,7 @@ cite .bibref {
 }
 
 code {
-  color: #c83500;
+  color: var(--code-color);
 }
 
 th code {
@@ -106,7 +137,7 @@ a[href].orcid > svg {
 
 a .secno,
 a .figno {
-  color: #000;
+  color: var(--fig-no-color);
 }
 
 ul.tof,
@@ -124,18 +155,18 @@ ol.tof {
 table.simple {
   border-spacing: 0;
   border-collapse: collapse;
-  border-bottom: 3px solid #005a9c;
+  border-bottom: 3px solid var(--table-simple-border-bottom);
 }
 
 .simple th {
-  background: #005a9c;
-  color: #fff;
+  background: var(--table-simple-th-bg-color);
+  color: var(--table-simple-th-color);
   padding: 3px 5px;
   text-align: left;
 }
 
 .simple th a {
-  color: #fff;
+  color: var(--table-simple-th-color);
   padding: 3px 5px;
   text-align: left;
 }
@@ -143,16 +174,16 @@ table.simple {
 .simple th[scope="row"] {
   background: inherit;
   color: inherit;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--table-simple-th-row-border-color);
 }
 
 .simple td {
   padding: 3px 10px;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--table-simple-th-row-border-color);
 }
 
 .simple tr:nth-child(even) {
-  background: #f0f6ff;
+  background: var(--table-simple-tr-nth-child-bg-color);
 }
 
 /* --- DL --- */
@@ -197,14 +228,14 @@ details.respec-tests-details > * {
 details.respec-tests-details[open] {
   z-index: 999999;
   position: absolute;
-  border: thin solid #cad3e2;
+  border: thin solid var(--details-border-color);
   border-radius: 0.3em;
   background-color: white;
   padding-bottom: 0.5em;
 }
 
 details.respec-tests-details[open] > summary {
-  border-bottom: thin solid #cad3e2;
+  border-bottom: thin solid var(--details-border-color);
   padding-left: 1em;
   margin-bottom: 1em;
   line-height: 2em;

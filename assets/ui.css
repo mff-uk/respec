@@ -1,3 +1,86 @@
+:root {
+  --bg-color: white;
+  --text-color: black;
+  --pill-color: rgb(120, 120, 120);
+  --pill-border-color: #ccc;
+  --box-shadow-color: rgba(100, 100, 100, 0.5);
+  --pill-disabled-border-color: rgba(40, 40, 40, 0.2);
+  --pill-disabled-left-border-color: #ffffff;
+  --pill-focus-color: black;
+  --pill-focus-bg-color: rgb(245, 245, 245);
+  --bg-color: #fff;
+  --respec-menu-hover-bg-color: #eeeeee;
+  --respec-save-btn-link-color: rgb(240, 240, 240);
+  --respec-save-btn-link-bg-color: rgb(42, 90, 168);
+  --pill-error-bg-color: red; 
+  --pill-error-color: white; 
+  --pill-warning-bg-color: orange; 
+  --pill-warning-color: white; 
+  --respec-error-list-bg-color: rgb(255, 251, 230); 
+  --respec-warning-list-color: rgb(92, 59, 0); 
+  --respec-warning-list-border-color: rgb(255, 245, 194); 
+  --respec-error-list-li-bg-color: rgb(255, 240, 240); 
+  --respec-error-list-li-color: rgb(92, 59, 0);
+  --respec-error-list-li-border-color: rgb(255, 215, 215);
+  --respec-overlay-bg-color: black;
+  --respec-modal-border-color: #666;
+  --respec-modal-h3-bg-gradient1: rgba(238, 238, 238, 1);
+  --respec-modal-h3-bg-gradient2: rgba(238, 238, 238, 1);
+  --respec-modal-h3-bg-gradient3: rgba(204, 204, 204, 1);
+  --respec-modal-color: black;
+  --respec-btn-copy-paste-bg-image: linear-gradient(#fcfcfc, #eee);
+  --respec-btn-copy-paste-border-color: rgb(144, 184, 222);
+  --specref-search-border-color: rgb(204, 204, 204);
+  --specref-submit-bg-color: rgb(51, 122, 183);
+  --specref-submit-color: white;
+  --specref-submit-hover-bg-color: #286090;
+  --specref-submit-hover-border-color: #204d74;
+  --specref-ui-result-color: rgb(128, 128, 128);
+  --specref-ui-result-authors-color: #006621;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--bg-color: rgb(24, 26, 27);
+		--text-color: rgb(232, 230, 227);
+		--pill-color: rgb(120, 120, 120);
+		--pill-border-color: #ccc;
+		--box-shadow-color: rgba(61, 64, 67, 0.5);
+		--pill-disabled-border-color: rgba(40, 40, 40, 0.2);
+		--pill-disabled-left-border-color: #ffffff;
+		--pill-focus-color: white;
+		--pill-focus-bg-color: rgb(45, 45, 45);
+		--respec-menu-hover-bg-color: rgb(24, 26, 27);
+		--respec-save-btn-link-color: rgb(240, 240, 240);
+		--respec-save-btn-link-bg-color: rgb(42, 90, 168);
+		--pill-error-bg-color: red; 
+		--pill-error-color: white; 
+		--pill-warning-bg-color: orange; 
+		--pill-warning-color: white; 
+		--respec-error-list-bg-color: rgb(255, 251, 230); 
+		--respec-warning-list-color: rgb(92, 59, 0); 
+		--respec-warning-list-border-color: rgb(255, 245, 194); 
+		--respec-error-list-li-bg-color: rgb(54, 10, 10); 
+		--respec-error-list-li-color: rgb(232, 230, 227);
+		--respec-error-list-li-border-color: rgb(151, 27, 27);
+		--respec-overlay-bg-color: black;
+		--respec-modal-border-color: #666;
+		--respec-modal-h3-bg-gradient1: rgba(238, 238, 238, 1);
+		--respec-modal-h3-bg-gradient2: rgba(238, 238, 238, 1);
+		--respec-modal-h3-bg-gradient3: rgba(204, 204, 204, 1);
+		--respec-modal-color: black;
+		--respec-btn-copy-paste-bg-image: linear-gradient(#fcfcfc, #eee);
+		--respec-btn-copy-paste-border-color: rgb(144, 184, 222);
+		--specref-search-border-color: rgb(204, 204, 204);
+		--specref-submit-bg-color: rgb(51, 122, 183);
+		--specref-submit-color: white;
+		--specref-submit-hover-bg-color: #286090;
+		--specref-submit-hover-border-color: #204d74;
+		--specref-ui-result-color: rgb(128, 128, 128);
+		--specref-ui-result-authors-color: #006621;
+	}
+}
+
 #respec-ui {
   position: fixed;
   display: flex;
@@ -11,11 +94,11 @@
 
 #respec-pill,
 .respec-info-button {
-  background: #fff;
+  background: var(--bg-color);
   height: 2.5em;
-  color: rgb(120, 120, 120);
-  border: 1px solid #ccc;
-  box-shadow: 1px 1px 8px 0 rgba(100, 100, 100, 0.5);
+  color: var(--pill-color);
+  border: 1px solid var(--pill-border-color);
+  box-shadow: 1px 1px 8px 0 var(--box-shadow-color);
 }
 
 .respec-info-button {
@@ -35,10 +118,10 @@
 #respec-pill:disabled {
   font-size: 2.8px;
   text-indent: -9999em;
-  border-top: 1.1em solid rgba(40, 40, 40, 0.2);
-  border-right: 1.1em solid rgba(40, 40, 40, 0.2);
-  border-bottom: 1.1em solid rgba(40, 40, 40, 0.2);
-  border-left: 1.1em solid #ffffff;
+  border-top: 1.1em solid var(--pill-disabled-border-color);
+  border-right: 1.1em solid var(--pill-disabled-border-color);
+  border-bottom: 1.1em solid var(--pill-disabled-border-color);
+  border-left: 1.1em solid var(--pill-disabled-left-border-color);
   transform: translateZ(0);
   animation: respec-spin 0.5s infinite linear;
   box-shadow: none;
@@ -74,8 +157,8 @@
 
 #respec-pill:hover,
 #respec-pill:focus {
-  color: rgb(0, 0, 0);
-  background-color: rgb(245, 245, 245);
+  color: var(--pill-focus-color);
+  background-color: var(--pill-focus-bg-color);
   transition: color 0.2s;
 }
 
@@ -84,8 +167,8 @@
   margin: 0;
   padding: 0;
   font-family: sans-serif;
-  background: #fff;
-  box-shadow: 1px 1px 8px 0 rgba(100, 100, 100, 0.5);
+  background: var(--bg-color);
+  box-shadow: 1px 1px 8px 0 var(--box-shadow-color);
   width: 200px;
   display: none;
   text-align: left;
@@ -112,8 +195,8 @@
 
 .respec-save-button:link {
   padding-top: 16px;
-  color: rgb(240, 240, 240);
-  background: rgb(42, 90, 168);
+  color: var(--respec-save-btn-link-color);
+  background: var(--respec-save-btn-link-bg-color);
   justify-self: stretch;
   height: 1cm;
   text-decoration: none;
@@ -125,7 +208,7 @@
 
 .respec-save-button:link:hover {
   color: white;
-  background: rgb(42, 90, 168);
+  background: var(--respec-save-btn-link-bg-color);
   padding: 0;
   margin: 0;
   border: 0;
@@ -140,13 +223,13 @@
 }
 
 #respec-pill-error {
-  background-color: red;
-  color: white;
+  background-color: var(--pill-error-bg-color);
+  color: var(--pill-error-color);
 }
 
 #respec-pill-warning {
-  background-color: orange;
-  color: white;
+  background-color: var(--pill-warning-bg-color);
+  color: var(--pill-warning-color);
 }
 
 .respec-warning-list,
@@ -155,7 +238,7 @@
   padding: 0;
   list-style: none;
   font-family: sans-serif;
-  background-color: rgb(255, 251, 230);
+  background-color: var(--respec-error-list-bg-color);
   font-size: 0.85em;
 }
 
@@ -175,13 +258,13 @@
 }
 
 .respec-warning-list li {
-  color: rgb(92, 59, 0);
-  border-bottom: thin solid rgb(255, 245, 194);
+  color: var(--respec-warning-list-color);
+  border-bottom: thin solid var(--respec-warning-list-border-color);
 }
 
 .respec-error-list,
 .respec-error-list li {
-  background-color: rgb(255, 240, 240);
+  background-color: var(--respec-error-list-li-bg-color);
 }
 
 .respec-error-list li::before {
@@ -191,8 +274,8 @@
 
 .respec-error-list li {
   padding: 0.4em 0.7em;
-  color: rgb(92, 59, 0);
-  border-bottom: thin solid rgb(255, 215, 215);
+  color: var(--respec-error-list-li-color);
+  border-bottom: thin solid var(--respec-error-list-li-border-color);
 }
 
 .respec-error-list li > p {
@@ -209,7 +292,7 @@
   left: 0px;
   height: 100%;
   width: 100%;
-  background: #000;
+  background: var(--respec-overlay-bg-color);
 }
 
 .respec-show-overlay {
@@ -228,8 +311,8 @@
   z-index: 11000;
   margin: auto;
   top: 10%;
-  background: #fff;
-  border: 5px solid #666;
+  background: var(--bg-color);
+  border: 5px solid var(--respec-modal-border-color);
   min-width: 20%;
   width: 79%;
   padding: 0;
@@ -248,12 +331,12 @@
   margin: 0;
   padding: 0.2em;
   text-align: center;
-  color: black;
+  color: var(--respec-modal-color);
   background: linear-gradient(
     to bottom,
-    rgba(238, 238, 238, 1) 0%,
-    rgba(238, 238, 238, 1) 50%,
-    rgba(204, 204, 204, 1) 100%
+    var(--respec-modal-h3-bg-gradient1) 0%,
+    var(--respec-modal-h3-bg-gradient2) 50%,
+    var(--respec-modal-h3-bg-gradient3) 100%
   );
   font-size: 1em;
 }
@@ -263,7 +346,8 @@
 }
 
 #respec-menu button.respec-option {
-  background: white;
+  background: var(--bg-color);
+  color: var(--text-color);
   padding: 0 0.2cm;
   border: none;
   width: 100%;
@@ -274,7 +358,7 @@
 
 #respec-menu button.respec-option:hover,
 #respec-menu button:focus {
-  background-color: #eeeeee;
+  background-color: var(--respec-menu-hover-bg-color);
 }
 
 .respec-cmd-icon {
@@ -291,8 +375,8 @@
   height: 28px;
   width: 40px;
   cursor: pointer;
-  background-image: linear-gradient(#fcfcfc, #eee);
-  border: 1px solid rgb(144, 184, 222);
+  background-image: var(--respec-btn-copy-paste-bg-image);
+  border: 1px solid var(--respec-btn-copy-paste-border-color);
   border-left: 0;
   border-radius: 0px 0px 3px 0;
   -webkit-user-select: none;
@@ -309,7 +393,7 @@
 
 #specref-ui header {
   font-size: 0.7em;
-  background-color: #eee;
+  background-color: var(--respec-menu-hover-bg-color);
   text-align: center;
   padding: 0.2cm;
   margin-bottom: 0.5cm;
@@ -358,24 +442,24 @@
   -webkit-appearance: none;
   font-size: 16px;
   border-radius: 0.1cm 0 0 0.1cm;
-  border: 1px solid rgb(204, 204, 204);
+  border: 1px solid var(--specref-search-border-color);
 }
 
 #specref-ui button[type="submit"] {
-  color: white;
+  color: var(--specref-submit-color);
   border-radius: 0 0.1cm 0.1cm 0;
-  background-color: rgb(51, 122, 183);
+  background-color: var(--specref-submit-bg-color);
 }
 
 #specref-ui button[type="submit"]:hover {
-  background-color: #286090;
-  border-color: #204d74;
+  background-color: var(--specref-submit-hover-bg-color);
+  border-color: var(--specref-submit-hover-border-color);
 }
 
 #specref-ui .result-stats {
   margin: 0;
   padding: 0;
-  color: rgb(128, 128, 128);
+  color: var(--specref-ui-result-color);
   font-size: 0.7em;
   font-weight: bold;
 }
@@ -393,7 +477,7 @@
 }
 #specref-ui .specref-results .authors {
   display: block;
-  color: #006621;
+  color: var(--specref-ui-result-authors-color);
 }
 
 @media print {

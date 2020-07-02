@@ -145,7 +145,11 @@ export default conf => {
           : ""}
         ${conf.otherLinks ? conf.otherLinks.map(showLink) : ""}
       </dl>
-      
+      ${conf.thanks
+      ? html`
+          <p class="copyright">${conf.thanks}</p>
+        `
+      : ""}
       <hr title="Separator for header" />
     </div>
   `;

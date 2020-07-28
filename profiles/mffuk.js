@@ -57,7 +57,7 @@ const modules = [
   import("../src/ui/about-respec.js"),
   import("../src/core/seo.js"),
 //  import("../src/w3c/seo.js"),
-  import("../src/odcz/seo.js"),
+  import("../src/mffuk/seo.js"),
   import("../src/core/highlight.js"),
   import("../src/core/webidl-clipboard.js"),
   import("../src/core/data-tests.js"),

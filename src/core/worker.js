@@ -14,7 +14,7 @@ import { fetchBase } from "./text-loader.js";
 // Opportunistically preload syntax highlighter
 const hint = {
   hint: "preload",
-  href: "https://ofn.gov.cz/static/js/respec-highlight.js",
+  href: "https://data.mff.cuni.cz/dokumentace/static/js/respec-highlight.js",
   as: "script",
 };
 const link = createResourceHint(hint);

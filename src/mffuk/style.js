@@ -18,7 +18,7 @@ function attachFixupScript(doc, version) {
       { once: true }
     );
   }
-  script.src = `https://ofn.gov.cz/static/js/fixup.js`;
+  script.src = `https://data.mff.cuni.cz/dokumentace/static/js/fixup.js`;
   doc.body.appendChild(script);
 }
 
@@ -42,7 +42,7 @@ function createMetaViewport() {
 function createBaseStyle() {
   const link = document.createElement("link");
   link.rel = "stylesheet";
-  link.href = "https://ofn.gov.cz/static/css/base.css";
+  link.href = "https://data.mff.cuni.cz/dokumentace/static/css/base.css";
   link.classList.add("removeOnSave");
   return link;
 }
@@ -70,12 +70,12 @@ function createResourceHints() {
     },
     {
       hint: "preload", // all specs need it, and we attach it on end-all.
-      href: "https://ofn.gov.cz/static/js/fixup.js",
+      href: "https://data.mff.cuni.cz/dokumentace/static/js/fixup.js",
       as: "script",
     },
     {
       hint: "preload", // all specs include on base.css.
-      href: "https://ofn.gov.cz/static/css/base.css",
+      href: "https://data.mff.cuni.cz/dokumentace/static/css/base.css",
       as: "style",
     }
   ]
@@ -125,7 +125,7 @@ export function run(conf) {
     );
   }
   const finalVersionPath = version ? `${version}/` : "";
-  const finalStyleURL = `https://ofn.gov.cz/static/css/${conf.specStatus}.css`;
+  const finalStyleURL = `https://data.mff.cuni.cz/dokumentace/static/css/${conf.specStatus}.css`;
 
   linkCSS(document, finalStyleURL);
   // Make sure the ODCZ stylesheet is the last stylesheet, as required by W3C Pub Rules.

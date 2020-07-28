@@ -1,7 +1,7 @@
 // ReSpec Worker v1.0.0
 "use strict";
 try {
-  importScripts("https://ofn.gov.cz/static/js/respec-highlight.js");
+  importScripts("https://data.mff.cuni.cz/dokumentace/static/js/respec-highlight.js");
 } catch (err) {
   console.error("Network error loading highlighter", err);
 }

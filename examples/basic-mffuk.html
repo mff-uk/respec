@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset='utf-8'>
+    <title>Replace me with a real title</title>
+    <script src='../builds/respec-mffuk.js' class='remove'></script>
+    <script class='remove'>
+      var respecConfig = {
+        specStatus: "ED",
+		showPreviousVersion: true,
+		prevVersion: "https://opendata.gov.cz/datova-sada:uredni-deska",
+		thisVersion: "https://data.gov.cz/specifikace/úřední-desky/draft/",
+		latestVersion: "https://data.gov.cz/specifikace/úřední-desky/",
+        editors: [{
+          name: "Your Name",
+          url: "https://your-site.com",
+        }],
+        github: "https://github.com/mff-uk/dokumentace/"
+      };
+    </script>
+  </head>
+  <body>
+    <section class="introductory" id='abstract'>
+	  <h2>Abstrakt</h2>
+	  <aside class="note" title="a">
+	  <p>aaa</p>
+	  <div>
+		<p>aaa</p>
+	  </div>
+	  </aside>
+<aside class="example" title="Vzorový výstup funkce package_list">
+                  Pro URL <code>https://vdb.czso.cz/pll/eweb/package_show?id=cis1051</code>
+                  <pre class="json">
+{
+    "success": true,
+    "result": {
+        "title": "Číselník ČSÚ: Druh voleb (kód 1051)",
+        "notes": "Druh voleb",
+        "frequency": "ANNUAL",
+        "ruian_type": "ST",
+        "ruian_code": "1",
+        "theme": "http://eurovoc.europa.eu/695",
+        "publisher_uri": "https://www.czso.cz",
+        "publisher_name": "Český statistický úřad",
+        "maintainer_email": "vdb@czso.cz",
+        "maintainer": "Český statistický úřad",
+        "schema": "https://apl.czso.cz/iSMS/cisinfo.jsp?kodcis=1051",
+        "temporal_start": "1990-01-01",
+        "temporal_end": "9999-09-09",
+        "tags": [{
+            "name": "VOLBY"
+        }, {
+            "name": "číselník"
+        }, {
+            "name": "ČSÚ"
+        }],
+        "resources": [{
+            "url": "https://apl.czso.cz/iSMS/cisexp.jsp?kodcis=1051&typdat=0&cisjaz=203&format=0",
+            "format": "text/xml",
+            "license_link": "https://portal.gov.cz/portal/ostatni/volny-pristup-k-ds.html",
+            "name": "Číselník v XML",
+            "describedBy": "http://apl.czso.cz/iSMS/xsd/isms_cisel.xsd",
+            "describedByType": "application/xml"
+        }]
+    }
+}</pre>
+                </aside>	  <aside class="warning" title="a">
+	  <p>aaa</p>
+	  <div>
+		<p>aaa</p>
+	  </div>
+	  </aside>
+	  <aside class="issue" title="a">
+	  <p>aaa</p>
+	  <div>
+		<p>aaa</p>
+	  </div>
+	  </aside>
+	  <p>
+        This is required. [[tabular-data-primer]]
+      </p>
+    </section>
+	<section id='úvod'>
+		<h2>Úvod</h2>
+      <p>
+        This is required. [[!tabular-data-primer]]
+      </p>
+    </section>
+    <section data-dfn-for="Foo">
+      <h2><dfn>Foo</dfn> interface</h2>
+      <pre class="idl">
+      interface Foo {
+        attribute Bar bar;
+        void doTheFoo();
+      };
+      </pre>
+	<figure id="diagram"><img alt="Datový model akcí" src="obrázky/akce.svg">
+		<figcaption>
+			<a href="https://drive.google.com/file/d/1JOIxDjP1JUur8TC_ImydXdSfhHDacHA2/view?usp=sharing">Datový model akcí</a>
+		</figcaption>
+	</figure>
+
+     <p>The <a>Foo</a> interface is nice. Lets you do stuff.</p>
+     <p>The <dfn>bar</dfn> attribute, returns ðŸº.</p>
+     <p>The <dfn>doTheFoo()</dfn> method, returns nothing.</p>
+	 A <a href="#úvod">úvod</a>
+    </section>
+  </body>
+</html>
